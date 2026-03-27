@@ -1,11 +1,41 @@
 /* 引入谷歌日系字体 */
 @import url('https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;700&display=swap');
 
+/* =========================================
+   🎨 浮光全局色彩宪法 (Color Variables)
+========================================= */
+:root {
+    /* 1. 基础背景层 */
+    --bg-main: #1a1a1a;
+    /* 网页最底部的深灰色 */
+    --bg-card: #2a2a2a;
+    /* 卡片静止时的底色 */
+    --bg-card-hover: rgba(75, 75, 75, 0.9);
+    /* 卡片悬停时的高级微亮 */
+
+    /* 2. 核心品牌色  */
+    --color-primary: #A3B8D6;
+    /* 时雨雾霾蓝 (用于发光、图标、重点文字) */
+    --color-accent: #d4b896;
+    /* 香槟枯木金 (用于按钮、极其重要的点缀) */
+
+    /* 3. 文本色阶 */
+    --text-title: #f5f5f5;
+    /* 标题色：柔和的偏白 */
+    --text-body: #a0a0a0;
+    /* 正文色：护眼的中灰 */
+
+    /* 4. 边框与阴影 */
+    --border-light: rgba(255, 255, 255, 0.06);
+    /* 极其微弱的卡片边框 */
+    --shadow-base: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
 /* 全局重置 */
 body {
     margin: 0;
     padding: 0;
-    background-color: #1a1a1a;
+    background-color: var(--bg-main);
     font-family: 'M PLUS 1', sans-serif;
 }
 
@@ -14,8 +44,10 @@ body {
 ========================================= */
 .fuguang-navbar {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 70px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
     background-color: rgba(26, 26, 26, 0.7);
     backdrop-filter: blur(12px);
     z-index: 1000;
@@ -26,61 +58,96 @@ body {
     box-sizing: border-box;
 }
 
-.nav-left, .nav-center, .nav-right { flex: 1; }
-.nav-center { display: flex; justify-content: center; }
-.nav-right { display: flex; justify-content: flex-end; }
+.nav-left,
+.nav-center,
+.nav-right {
+    flex: 1;
+}
+
+.nav-center {
+    display: flex;
+    justify-content: center;
+}
+
+.nav-right {
+    display: flex;
+    justify-content: flex-end;
+}
 
 /* 圆形 Logo (现在里面是 FontAwesome 太阳图标) */
 .circle-logo {
-    width: 46px; height: 46px;
+    width: 46px;
+    height: 46px;
     background-color: #ffffff;
     color: #1a1a1a;
     border-radius: 50%;
-    display: flex; justify-content: center; align-items: center;
-    font-size: 20px; text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    text-decoration: none;
     transition: transform 0.3s ease;
 }
-.circle-logo:hover { transform: scale(1.1); }
+
+.circle-logo:hover {
+    transform: scale(1.1);
+}
 
 /* 登录按钮 */
 .login-btn {
-    background-color: #df3079;
-    color: #ffffff;
+    background-color: var(--color-accent);
+    color: #1a1a1a;
     padding: 10px 24px;
     border-radius: 30px;
-    text-decoration: none; font-weight: bold; font-size: 15px;
-    transition: background-color 0.3s ease;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 15px;
+    transition: all 0.3s ease;
 }
-.login-btn:hover { background-color: #c92869; }
+
+.login-btn:hover {
+    background-color: #e5cdb2;
+    transform: translateY(-2px);
+}
 
 .scroll-placeholder {
     height: 40vh;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    color: #888; padding-top: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #888;
+    padding-top: 70px;
 }
 
 /* =========================================
    2. 终极卡片魔法区 (变白 + 扫光 + 变色)
 ========================================= */
 .fuguang-grid-container {
-    display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; padding: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    padding: 20px;
 }
 
 /* 卡片静止状态 */
 .fuguang-card {
-    background-color: #2c2c2c; /* 初始深色底 */
-    border: 1px solid #3a3a3a;
+    background-color: var(--bg-card);
+    /* 初始深色底 */
+    border: 1px solid var(--border-light);
     border-radius: 15px;
     padding: 30px 20px;
     text-align: center;
     cursor: pointer;
-    width: 220px; min-height: 180px;
+    width: 220px;
+    min-height: 180px;
     box-sizing: border-box;
-    
+
     /* 幽灵扫光必备：相对定位 + 溢出隐藏 */
     position: relative;
     overflow: hidden;
-    
+
     /* 让背景色、边框、位移的改变都极其丝滑 */
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -88,30 +155,42 @@ body {
 /* 卡片内部元素静止状态 */
 .fuguang-card .card-icon {
     font-size: 32px;
-    color: #666; /* 初始图标颜色较暗 */
+    color: #666;
+    /* 初始图标颜色较暗 */
     margin-bottom: 15px;
     transition: all 0.4s ease;
-    position: relative; z-index: 1; /* 保证在光束之上 */
+    position: relative;
+    z-index: 1;
+    /* 保证在光束之上 */
 }
+
 .fuguang-card h2 {
-    color: #ffffff; /* 初始标题白色 */
+    color: var(--text-title);
+    /* 初始标题白色 */
     margin: 0 0 10px 0;
     transition: all 0.4s ease;
-    position: relative; z-index: 1;
+    position: relative;
+    z-index: 1;
 }
+
 .fuguang-card p {
-    color: #aaaaaa; /* 初始正文浅灰 */
-    margin: 0; font-size: 14px;
+    color: var(--text-title);
+    /* 初始正文浅灰 */
+    margin: 0;
+    font-size: 14px;
     transition: all 0.4s ease;
-    position: relative; z-index: 1;
+    position: relative;
+    z-index: 1;
 }
 
 /* 幽灵光束准备 (藏在左边) */
 .fuguang-card::before {
     content: "";
     position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
     /* 配合白底，光束换成了您抓取的极淡幽蓝色 */
     background: linear-gradient(90deg, transparent, rgba(74, 111, 165, 0.15), transparent);
     transition: left 0.6s ease;
@@ -122,14 +201,14 @@ body {
 ========================================= */
 .fuguang-card:hover {
     transform: translateY(-5px);
-    
+
     /* 魔法 1：完美复刻！高级的深灰微亮，视觉欺骗的巅峰 */
-    background-color: rgba(75, 75, 75, 0.9); 
-    
+    background-color: var(--bg-card-hover);
+
     /* 魔法 2：边框和发光保持极其克制的幽蓝色 */
     border-color: rgba(74, 111, 165, 0.5);
     box-shadow: 0 12px 25px rgba(0, 0, 0, 0.9),
-                0 0 15px rgba(74, 111, 165, 0.2);
+        0 0 15px rgba(74, 111, 165, 0.2);
 }
 
 /* 魔法 3：导演喊 Action，幽灵光束从左冲到右！ */
@@ -139,14 +218,19 @@ body {
 
 /* 魔法 4：文字亮度修正 (底色是深灰，文字必须保持明亮) */
 .fuguang-card:hover .card-icon {
-    color: #4a6fa5; /* 图标亮起时雨之町的幽蓝色 */
+    color: var(--color-primary);
+    /* 图标亮起时雨之町的幽蓝色 */
     transform: scale(1.1);
 }
+
 .fuguang-card:hover h2 {
-    color: #df3079; /* 标题亮起浮光专属的洋红色 */
+    color: var(--color-accent);
+    /* 标题亮起浮光专属的洋红色 */
 }
+
 .fuguang-card:hover p {
-    color: #e0e0e0; /* 正文变成亮灰色，保证在深灰底色上极其清晰 */
+    color: var(--text-title);
+    /* 正文变成亮灰色，保证在深灰底色上极其清晰 */
 }
 
 /* 物理按压反馈 */
