@@ -126,18 +126,53 @@ body {
 /* =========================================
    🍱 核心区域：CSS Grid 黄金网格结界
 ========================================= */
-.fuguang-grid-container {
-    max-width: 700px;
-    /* 原汁原味的 700px 紧凑版心 */
-    margin: 0 auto;
-    padding: 20px;
+/* =========================================
+   🚀 视觉中心集束控制 (The Master Controller)
+========================================= */
+/* 1. 强制所有元素遵循 box-sizing (复刻您抓取的代码) */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-    /* 核心魔法：开启网格布局！ */
+/* 修改标题区的样式，让它在集束器里居中且优雅 */
+.hero-section {
+    padding: 120px 0 40px;
+    /* 顶部留出导航栏的 70px + 间距 */
+    text-align: center;
+    color: #888;
+}
+
+.hero-section h1 {
+    color: var(--color-accent);
+    margin-bottom: 10px;
+}
+
+/* 2. 主视觉区：规定全站的“窄屏”高级感 */
+.home-main {
+    width: 100%;
+    max-width: 700px;
+    /* 严格复刻对标网站的 700px 黄金宽度 */
+    margin: 0 auto;
+    /* 绝对水平居中 */
+    padding: 0 16px;
+    /* 两侧留一点安全缝隙，防止手机端文字贴边 */
+}
+
+/* 保持 Grid 容器简洁 */
+.fuguang-grid-container {
     display: grid;
-    /* 强行切分：重复 4 次，每次占 1 份空间 (即 4 列) */
     grid-template-columns: repeat(4, 1fr);
-    /* 完美的十字沟壑：卡片之间间距 16px */
     gap: 16px;
+    margin-top: 20px;
+}
+
+/* 4. 预留给搜索区域的样式 */
+.search-wrapper {
+    width: 100%;
+    margin-bottom: 24px;
+    /* 之后您在这里写具体的搜索框背景、圆角等 */
 }
 
 /* 📱 极客细节：响应式防御 (手机屏幕太小，必须变成 2 列) */
