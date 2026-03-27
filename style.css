@@ -123,64 +123,94 @@ body {
 /* =========================================
    2. 终极卡片魔法区 (变白 + 扫光 + 变色)
 ========================================= */
+/* =========================================
+   🍱 核心区域：CSS Grid 黄金网格结界
+========================================= */
 .fuguang-grid-container {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
+    max-width: 700px;
+    /* 原汁原味的 700px 紧凑版心 */
+    margin: 0 auto;
     padding: 20px;
+
+    /* 核心魔法：开启网格布局！ */
+    display: grid;
+    /* 强行切分：重复 4 次，每次占 1 份空间 (即 4 列) */
+    grid-template-columns: repeat(4, 1fr);
+    /* 完美的十字沟壑：卡片之间间距 16px */
+    gap: 16px;
+}
+
+/* 📱 极客细节：响应式防御 (手机屏幕太小，必须变成 2 列) */
+@media (max-width: 600px) {
+    .fuguang-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 /* 卡片静止状态 */
+/* =========================================
+   🎛️ 便当盒卡片本体 (控制按键形态)
+========================================= */
 .fuguang-card {
     background-color: var(--bg-card);
-    /* 初始深色底 */
     border: 1px solid var(--border-light);
-    border-radius: 15px;
-    padding: 30px 20px;
-    text-align: center;
-    cursor: pointer;
-    width: 220px;
-    min-height: 180px;
-    box-sizing: border-box;
+    border-radius: 12px;
 
-    /* 幽灵扫光必备：相对定位 + 溢出隐藏 */
+    /* 极度克制的内边距：上下 16px，左右 8px */
+    padding: 16px 8px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 绝对居中 */
+    justify-content: center;
+
+    /* 高度锁定在约 100px 左右，呈现精悍的按钮感 */
+    height: 100px;
+    box-sizing: border-box;
+    text-decoration: none;
+    /* 去除 a 标签默认下划线 */
+
     position: relative;
     overflow: hidden;
-
-    /* 让背景色、边框、位移的改变都极其丝滑 */
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* 卡片内部元素静止状态 */
+/* =========================================
+   ✨ 卡片内脏：金属圆标与 13px 字体
+========================================= */
+
+/* 1. 圆形金属图标基座 (您抓取到的顶级质感代码) */
 .fuguang-card .card-icon {
-    font-size: 32px;
-    color: #666;
-    /* 初始图标颜色较暗 */
-    margin-bottom: 15px;
-    transition: all 0.4s ease;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+
+    /* 极其高级的冷色调金属反光渐变！ */
+    background: linear-gradient(38deg, #303030, #505052, #262626);
+    color: var(--color-primary);
+    /* 时雨雾霾蓝图标 */
+    font-size: 16px;
+    /* 图标大小适配 40px 基座 */
+
+    transition: all 0.3s ease;
     position: relative;
     z-index: 1;
-    /* 保证在光束之上 */
 }
 
+/* 2. 13px 极简字体 */
 .fuguang-card h2 {
+    font-size: 13px;
+    font-weight: 500;
     color: var(--text-title);
-    /* 初始标题白色 */
-    margin: 0 0 10px 0;
-    transition: all 0.4s ease;
-    position: relative;
-    z-index: 1;
-}
-
-.fuguang-card p {
-    color: var(--text-title);
-    /* 初始正文浅灰 */
     margin: 0;
-    font-size: 14px;
-    transition: all 0.4s ease;
     position: relative;
     z-index: 1;
+    transition: color 0.3s ease;
 }
 
 /* 幽灵光束准备 (藏在左边) */
@@ -199,38 +229,40 @@ body {
 /* =========================================
    🖱️ 见证奇迹的悬停时刻 (Hover) - 原版暗黑克制版
 ========================================= */
-.fuguang-card:hover {
-    transform: translateY(-5px);
-
-    /* 魔法 1：完美复刻！高级的深灰微亮，视觉欺骗的巅峰 */
-    background-color: var(--bg-card-hover);
-
-    /* 魔法 2：边框和发光保持极其克制的幽蓝色 */
-    border-color: rgba(74, 111, 165, 0.5);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.9),
-        0 0 15px rgba(74, 111, 165, 0.2);
+/* =========================================
+   🖱️ 悬停互动保留区 (完美继承之前的光效)
+========================================= */
+.fuguang-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(163, 184, 214, 0.15), transparent);
+    transition: left 0.5s ease;
 }
 
-/* 魔法 3：导演喊 Action，幽灵光束从左冲到右！ */
+.fuguang-card:hover {
+    transform: translateY(-4px);
+    background-color: var(--bg-card-hover);
+    border-color: rgba(163, 184, 214, 0.5);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.9), 0 0 15px rgba(163, 184, 214, 0.2);
+}
+
 .fuguang-card:hover::before {
     left: 100%;
 }
 
-/* 魔法 4：文字亮度修正 (底色是深灰，文字必须保持明亮) */
 .fuguang-card:hover .card-icon {
-    color: var(--color-primary);
-    /* 图标亮起时雨之町的幽蓝色 */
+    color: var(--color-accent);
+    /* 鼠标放上去，图标变成香槟金 */
     transform: scale(1.1);
 }
 
 .fuguang-card:hover h2 {
     color: var(--color-accent);
-    /* 标题亮起浮光专属的洋红色 */
-}
-
-.fuguang-card:hover p {
-    color: var(--text-title);
-    /* 正文变成亮灰色，保证在深灰底色上极其清晰 */
+    /* 文字也变香槟金 */
 }
 
 /* 物理按压反馈 */
@@ -239,4 +271,104 @@ body {
     /* 按下时，底色稍微变暗一点点，模拟真实物理阴影 */
     background-color: rgba(60, 60, 60, 0.9);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.9);
+}
+
+/* =========================================
+   📱 移动端底部导航栏 (App 级复刻)
+========================================= */
+
+/* =========================================
+   🛸 桌面级悬浮岛导航 (Floating Dock)
+========================================= */
+
+.fuguang-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    /* 1. 核心修复：死死贴住屏幕最下方，取消悬空 */
+
+    width: 90%;
+    max-width: 800px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    /* 2. 核心修复：极致的不对称切角艺术 
+       顺序是：左上、右上、右下、左下 */
+    border-radius: 20px 20px 0 0;
+
+    /* 3. 边框微调：因为贴地了，所以取消下方的边框线 */
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: none;
+
+    backdrop-filter: blur(15px);
+    background-color: rgba(42, 42, 42, 0.85);
+
+    /* 4. 阴影微调：阴影主要向上发散，制造从底部弹出的立体感 */
+    box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+}
+
+.bottom-nav-list {
+    display: flex;
+    justify-content: space-around;
+    /* 五个按钮均匀等分屏幕 */
+    align-items: center;
+    list-style: none;
+    /* 去掉烦人的小圆点 */
+    margin: 0;
+    padding: 10px 0;
+}
+
+/* 按钮的统一样式 */
+.nav-btn {
+    display: flex;
+    flex-direction: column;
+    /* 图标在上，文字在下 */
+    align-items: center;
+    background: none;
+    border: none;
+    text-decoration: none;
+    color: var(--text-body);
+    /* 默认中灰色 */
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.nav-btn i {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.nav-btn span {
+    font-size: 10px;
+    /* 移动端导航字必须小 */
+}
+
+/* 悬停/激活状态 (亮起雾霾蓝) */
+.nav-btn:hover,
+.nav-btn:active {
+    color: var(--color-primary);
+}
+
+/* 🎯 极客微交互：右上角消息角标 */
+.icon-wrapper {
+    position: relative;
+    /* 为角标提供坐标系 */
+}
+
+.badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    background-color: #df3079;
+    /* 浮光洋红，极其醒目 */
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 10px;
+    /* 变成小药丸形状 */
+    border: 2px solid var(--bg-card);
+    /* 掏空一个边缘，防止和图标粘连 */
 }
