@@ -29,7 +29,37 @@
                 <p>将鼠标悬停在下方卡片上测试扫光与变白特效...</p>
             </div>
 
-            <div class="search-wrapper">
+            <div class="home-search-wrapper">
+                <div class="home-search">
+
+                    <div class="search-mode-toggle">
+                        <div class="toggle-track">
+                            <span class="toggle-label active"><i class="fas fa-link"></i> 关联搜索</span>
+                            <span class="toggle-label"><i class="fas fa-crosshairs"></i> 精准搜索</span>
+                            <div class="toggle-thumb"></div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" placeholder="搜索单词、文章…" class="search-input" autocomplete="off">
+                        <button class="search-clear"><i class="fas fa-times"></i></button>
+                    </div>
+
+                    <div class="search-dropdown">
+                        <div class="dropdown-section">
+                            <div class="dropdown-header">
+                                <span><i class="fas fa-history"></i> 搜索历史</span>
+                                <button class="clear-btn">清除全部</button>
+                            </div>
+                            <ul class="dropdown-list">
+                                <li><a href="#">です的用法</a></li>
+                                <li><a href="#">N3 文法</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
             </div>
 
             <div class="fuguang-grid-container">
@@ -94,6 +124,48 @@
             </li>
         </ul>
     </nav>
+
+    <script>
+        // 1. 简单的搜索框切换逻辑
+        const toggle = document.querySelector('.search-mode-toggle');
+        const thumb = document.querySelector('.toggle-thumb');
+        const labels = document.querySelectorAll('.toggle-label');
+
+        toggle.addEventListener('click', () => {
+            // 切换滑块位置
+            const isActive = thumb.style.transform === 'translateX(100%)';
+            thumb.style.transform = isActive ? 'translateX(0)' : 'translateX(100%)';
+
+            // 切换文字高亮
+            labels.forEach(l => l.classList.toggle('active'));
+        });
+
+        // 2. 输入框聚焦显示下拉菜单
+        const input = document.querySelector('.search-input');
+        const dropdown = document.querySelector('.search-dropdown');
+        const clearBtn = document.querySelector('.search-clear');
+
+        input.addEventListener('focus', () => {
+            dropdown.style.display = 'block';
+        });
+
+        input.addEventListener('input', () => {
+            clearBtn.style.display = input.value ? 'block' : 'none';
+        });
+
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            clearBtn.style.display = 'none';
+            input.focus();
+        });
+
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.home-search')) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
 
 </body>
 
