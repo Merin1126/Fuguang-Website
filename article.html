@@ -14,13 +14,26 @@
 <body>
 
     <nav class="fuguang-navbar">
-        <div class="nav-center"><a href="index.html" class="circle-logo"><i class="fa-solid fa-sun"></i></a></div>
+        <div class="nav-left"></div>
+        <div class="nav-center">
+            <a href="index.html" class="circle-logo"><i class="fa-solid fa-sun"></i></a>
+        </div>
+        <div class="nav-right">
+            <a href="#" class="login-btn">登录</a>
+        </div>
     </nav>
 
     <main class="home-main" style="padding-top: 100px; padding-bottom: 120px;">
 
-        <article class="fuguang-article">
+        <div class="breadcrumbs">
+            <a href="index.html">首页</a>
+            <span class="separator"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></span>
+            <a href="#">站长日记</a>
+            <span class="separator"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></span>
+            <span>关于扶光与日语学习</span>
+        </div>
 
+        <article class="fuguang-article">
             <header class="article-header">
                 <div class="article-meta">
                     <span class="tag">站长日记</span>
@@ -47,6 +60,46 @@
 
         </article>
     </main>
+    <nav class="fuguang-bottom-nav">
+        <ul class="bottom-nav-list">
+            <li class="nav-item">
+                <button class="nav-btn">
+                    <i class="fa-solid fa-bars"></i>
+                    <span>菜单</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-btn">
+                    <i class="fa-solid fa-search"></i>
+                    <span>搜索</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-btn">
+                    <div class="icon-wrapper">
+                        <i class="fa-regular fa-heart"></i>
+                        <span class="badge">15</span>
+                    </div>
+                    <span>喜欢</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-btn">
+                    <div class="icon-wrapper">
+                        <i class="fa-regular fa-star"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <span>收藏</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-btn">
+                    <i class="fa-solid fa-user"></i>
+                    <span>账号</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 
 </body>
 

@@ -3,9 +3,31 @@
 ========================================= */
 
 .fuguang-article {
-    color: var(--text-body);
+    /* --- 新增：阅读底座核心样式 --- */
+    background-color: var(--bg-card);
+    /* 使用全局定义的卡片底色 */
+    border-radius: 12px;
+    /* 圆角，与首页卡片保持统一的视觉语言 */
+    box-shadow: var(--shadow-base);
+    /* 基础阴影，让底座微微浮起 */
+    padding: 40px;
+    /* ★ 极其重要：根据 CSS 盒模型，添加内边距防止文字贴边，提供呼吸感 */
+
+    /* --- 继承原有样式 --- */
+    color: var(--text-color);
     animation: fadeIn 0.8s ease;
-    /* 页面加载时的轻微淡入效果 */
+
+    /* --- 新增：平滑过渡效果 --- */
+    /* 提前为你提供的参考代码做好准备，这在未来我们做“深色/浅色模式切换”时会非常丝滑 */
+    transition: background-color .3s, color .3s, border-color .3s, opacity .3s, box-shadow .3s;
+}
+
+/* --- 新增：移动端响应式适配 (Responsive Design) --- */
+/* 当屏幕宽度小于 600px（手机端）时，缩小底座的内边距，为正文腾出更多显示空间 */
+@media (max-width: 600px) {
+    .fuguang-article {
+        padding: 24px 16px;
+    }
 }
 
 /* 头部信息区 */
@@ -86,4 +108,29 @@ rt {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.breadcrumbs {
+    font-size: 14px;
+    margin-bottom: 24px;
+    /* 和下方文章底座拉开一点距离 */
+    color: var(--text-body);
+}
+
+.breadcrumbs a {
+    color: var(--color-primary);
+    /* 链接使用品牌蓝 */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumbs a:hover {
+    color: var(--color-accent);
+    /* 鼠标悬停变金色 */
+}
+
+.breadcrumbs .separator {
+    margin: 0 8px;
+    color: #666;
+    /* 分隔符颜色稍微暗一点 */
 }
