@@ -1,0 +1,204 @@
+/* =========================================
+   顶部导航栏 (Top Navigation Bar)
+========================================= */
+.fuguang-navbar {
+    position: fixed;
+    /* 固定定位：滚动页面时导航栏始终钉在视口顶部 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* 横向撑满整个视口宽度 */
+    height: 70px;
+    /* 固定高度，其他元素的 padding-top 需要参考这个值 */
+    background-color: rgba(26, 26, 26, 0.7);
+    /* 半透明背景，0.7 透明度配合 backdrop-filter 产生毛玻璃感 */
+    backdrop-filter: blur(12px);
+    /* 模糊导航栏后方的内容，制造磨砂玻璃效果 */
+    z-index: 1000;
+    /* 层叠顺序，确保导航栏永远显示在普通内容之上 */
+    display: flex;
+    /* 弹性布局，让左中右三个区域横排 */
+    justify-content: space-between;
+    /* 三列之间的空间均匀分布到两侧 */
+    align-items: center;
+    /* 垂直方向居中对齐 */
+    padding: 0 40px;
+    /* 上下无内边距，左右各留 40px 安全距离 */
+    box-sizing: border-box;
+}
+
+/* 导航栏三列均分宽度 */
+.nav-left,
+.nav-center,
+.nav-right {
+    flex: 1;
+    /* 每列各占 1/3，实现等宽三分 */
+}
+
+.nav-center {
+    display: flex;
+    justify-content: center;
+    /* Logo 在中间列内水平居中 */
+}
+
+.nav-right {
+    display: flex;
+    justify-content: flex-end;
+    /* 按钮靠右对齐 */
+}
+
+/* 圆形 Logo */
+.circle-logo {
+    width: 46px;
+    height: 46px;
+    background-color: #ffffff;
+    /* 白色底，和深色导航栏形成强对比 */
+    color: #1a1a1a;
+    /* 图标颜色深色，与白底形成对比 */
+    border-radius: 50%;
+    /* 50% 圆角 = 完美的圆形 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* 内部图标在圆内水平垂直居中 */
+    font-size: 20px;
+    text-decoration: none;
+    /* 去掉 <a> 标签自带的下划线 */
+    transition: transform 0.3s ease;
+    /* 悬停缩放动画，0.3s 是肉眼感受自然的最短时间 */
+}
+
+.circle-logo:hover {
+    transform: scale(1.1);
+    /* 放大到 110%，subtle 的反馈感 */
+}
+
+/* 登录按钮 */
+.login-btn {
+    background-color: var(--color-accent);
+    /* 香槟金底色，视觉上最突出的行动按钮 */
+    color: #1a1a1a;
+    /* 深色文字，与金色底形成高对比度，易读 */
+    padding: 10px 24px;
+    /* 上下 10px / 左右 24px，让按钮看起来宽大舒适 */
+    border-radius: 30px;
+    /* 大圆角，胶囊形按钮，现代感强 */
+    text-decoration: none;
+    /* 去掉 <a> 标签默认下划线 */
+    font-weight: bold;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    /* all：所有属性变化都参与过渡动画 */
+}
+
+.login-btn:hover {
+    background-color: #e5cdb2;
+    /* 比金色更浅的奶油色，悬停时产生变亮的反馈 */
+    transform: translateY(-2px);
+    /* 向上轻移 2px，模拟按钮被"挑起"的感觉 */
+}
+
+/* =========================================
+   底部导航栏 (Bottom Navigation Bar)
+========================================= */
+/* 悬浮岛：水平居中，底部贴边，顶部两角圆弧 */
+.fuguang-bottom-nav {
+    position: fixed;
+    /* 固定定位：始终贴在视口底部，不随页面滚动 */
+    bottom: 0;
+    /* 贴住屏幕最底边 */
+    width: 90%;
+    /* 不占满全宽，两侧留白，形成悬浮岛感 */
+    max-width: 600px;
+    /* 大屏幕上限制最大宽度，防止过宽 */
+    left: 50%;
+    transform: translateX(-50%);
+    /* left:50% + translateX(-50%) = 水平完美居中的经典写法 */
+    border-radius: 20px 20px 0 0;
+    /* 顺时针：左上、右上、右下、左下；只让顶部两角圆弧 */
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: none;
+    /* 贴地的底部不需要边框线 */
+    backdrop-filter: blur(15px);
+    /* 毛玻璃：模糊底部导航栏后方的页面内容 */
+    background-color: rgba(42, 42, 42, 0.85);
+    box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.6);
+    /* 向上(负值)的阴影，制造从底部浮起的立体感 */
+    z-index: 2000;
+    /* 比顶部导航栏(1000)更高，确保始终在最上层 */
+}
+
+/* 导航按钮列表：去掉列表样式，均匀排列按钮 */
+.bottom-nav-list {
+    display: flex;
+    justify-content: space-around;
+    /* 按钮之间等间距分布（含两侧） */
+    align-items: center;
+    list-style: none;
+    /* 去掉 <ul> 的默认圆点 */
+    margin: 0;
+    padding: 10px 0;
+    /* 上下留 10px 内边距，给按钮一点点"呼吸"空间 */
+}
+
+/* 单个导航按钮：图标在上，文字在下 */
+.nav-btn {
+    display: flex;
+    flex-direction: column;
+    /* 图标在上，文字在下 */
+    align-items: center;
+    background: none;
+    /* 清除 <button> 默认背景 */
+    border: none;
+    /* 清除 <button> 默认边框 */
+    text-decoration: none;
+    /* 如果是 <a> 标签，去掉下划线 */
+    color: var(--text-body);
+    /* 默认中灰色，未激活状态 */
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.nav-btn i {
+    font-size: 20px;
+    margin-bottom: 4px;
+    /* 图标与下方文字标签的间距 */
+}
+
+.nav-btn span {
+    font-size: 10px;
+    /* 移动端导航标签文字必须小，避免拥挤 */
+}
+
+/* 悬停/激活：亮起品牌蓝，提供视觉反馈 */
+.nav-btn:hover,
+.nav-btn:active {
+    color: var(--color-primary);
+}
+
+/* 消息角标容器：relative 为角标的绝对定位提供坐标系 */
+.icon-wrapper {
+    position: relative;
+}
+
+/* 消息数字角标（红点） */
+.badge {
+    position: absolute;
+    /* 相对于 .icon-wrapper 定位 */
+    top: -6px;
+    /* 向上超出图标 6px */
+    right: -10px;
+    /* 向右超出图标 10px */
+    background-color: #df3079;
+    /* 浮光洋红，高饱和度，极其醒目 */
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 10px;
+    /* 足够大的圆角，数字少时是圆形，数字多时是胶囊形 */
+    border: 2px solid var(--bg-card);
+    /* 与卡片同色的边框，制造"镂空"效果，避免和图标粘连 */
+}

@@ -7,6 +7,7 @@
    文档头部 (Document Head)
    此区域的内容不显示在页面上，用于配置元数据和加载资源
 ========================================= -->
+
 <head>
     <!-- charset：字符编码，UTF-8 支持中文、日文、emoji 等所有字符，必须写 -->
     <meta charset="UTF-8">
@@ -20,7 +21,9 @@
     <title>扶光日语 - 极简便当盒 UI</title>
 
     <!-- rel="stylesheet"：告诉浏览器这个链接是样式表；href 是文件路径 -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/home.css">
 
     <!-- 引入 Font Awesome 6.4.0 图标库（CDN 远程版本），提供所有 fa-* 图标 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -28,261 +31,271 @@
 
 <body>
 
-<!-- =========================================
+    <!-- =========================================
    顶部导航栏 (Top Navigation Bar)
    使用 <nav> 语义化标签，告知浏览器和搜索引擎这是导航区域
 ========================================= -->
-<nav class="fuguang-navbar">
+    <nav class="fuguang-navbar">
 
-    <!-- 左侧占位列：内容为空，但 flex:1 保证三列等宽，使 Logo 能真正居中 -->
-    <div class="nav-left"></div>
+        <!-- 左侧占位列：内容为空，但 flex:1 保证三列等宽，使 Logo 能真正居中 -->
+        <div class="nav-left"></div>
 
-    <!-- 中间列：Logo -->
-    <div class="nav-center">
-        <!-- href="#" 是临时占位链接，正式上线时替换为首页路径
+        <!-- 中间列：Logo -->
+        <div class="nav-center">
+            <!-- href="#" 是临时占位链接，正式上线时替换为首页路径
              fa-sun 是 Font Awesome 的太阳图标 class -->
-        <a href="#" class="circle-logo"><i class="fa-solid fa-sun"></i></a>
-    </div>
+            <a href="#" class="circle-logo"><i class="fa-solid fa-sun"></i></a>
+        </div>
 
-    <!-- 右侧列：登录按钮 -->
-    <div class="nav-right">
-        <a href="#" class="login-btn">登录</a>
-    </div>
+        <!-- 右侧列：登录按钮 -->
+        <div class="nav-right">
+            <a href="#" class="login-btn">登录</a>
+        </div>
 
-</nav>
+    </nav>
 
-<!-- =========================================
+    <!-- =========================================
    页面主体内容 (Main Content)
    <main> 语义化标签：页面的核心内容区，每个页面只应有一个 <main>
 ========================================= -->
-<main>
-    <!-- .home-main：限宽容器，在 CSS 中设置了 max-width: 700px 并水平居中 -->
-    <section class="home-main">
+    <main>
+        <!-- .home-main：限宽容器，在 CSS 中设置了 max-width: 700px 并水平居中 -->
+        <section class="home-main">
 
-        <!-- ===== 主标题区 (Hero Section) ===== -->
-        <div class="hero-section">
-            <h1>👇 见证终极复合魔法 👇</h1>
-            <p>将鼠标悬停在下方卡片上测试扫光与变白特效...</p>
-        </div>
+            <!-- ===== 主标题区 (Hero Section) ===== -->
+            <div class="hero-section">
+                <h1>👇 见证终极复合魔法 👇</h1>
+                <p>将鼠标悬停在下方卡片上测试扫光与变白特效...</p>
+            </div>
 
-        <!-- ===== 搜索组件 (Search Component) ===== -->
-        <!-- .home-search-wrapper：搜索组件的最外层容器，position:relative 为下拉面板提供定位坐标系 -->
-        <div class="home-search-wrapper">
-            <!-- .home-search：搜索底座，包含切换开关和输入框 -->
-            <div class="home-search">
+            <!-- ===== 搜索组件 (Search Component) ===== -->
+            <!-- .home-search-wrapper：搜索组件的最外层容器，position:relative 为下拉面板提供定位坐标系 -->
+            <div class="home-search-wrapper">
+                <!-- .home-search：搜索底座，包含切换开关和输入框 -->
+                <div class="home-search">
 
-                <!-- 模式切换开关：关联搜索 / 精准搜索 -->
-                <div class="search-mode-toggle">
-                    <!-- .toggle-track：滑块轨道，position:relative 为 .toggle-thumb 提供定位坐标系 -->
-                    <div class="toggle-track">
-                        <!-- active class 控制当前选中项的文字颜色，由 JS 动态切换 -->
-                        <span class="toggle-label active">
-                            <i class="fas fa-link"></i> 关联搜索
-                        </span>
-                        <span class="toggle-label">
-                            <i class="fas fa-crosshairs"></i> 精准搜索
-                        </span>
-                        <!-- 蓝色滑块：JS 通过修改 transform: translateX() 让它左右滑动 -->
-                        <div class="toggle-thumb"></div>
-                    </div>
-                </div>
-
-                <!-- 输入框组：搜索图标 + 输入框 + 清空按钮 -->
-                <!-- .input-group：position:relative 容器，让图标和清空按钮能绝对定位在输入框内 -->
-                <div class="input-group">
-                    <!-- 搜索图标：纯装饰，CSS 中设置了 pointer-events:none，点击会穿透到输入框 -->
-                    <i class="fas fa-search search-icon"></i>
-
-                    <!-- autocomplete="off"：关闭浏览器自动填充，避免覆盖自定义的搜索历史下拉面板 -->
-                    <input type="text" placeholder="搜索单词、文章…" class="search-input" autocomplete="off">
-
-                    <!-- 清空按钮：CSS 中默认 display:none，有内容时由 JS 控制显示 -->
-                    <button class="search-clear"><i class="fas fa-times"></i></button>
-                </div>
-
-                <!-- 搜索结果下拉面板：CSS 中默认 display:none，输入框聚焦时由 JS 控制显示 -->
-                <div class="search-dropdown">
-                    <div class="dropdown-section">
-                        <div class="dropdown-header">
-                            <span><i class="fas fa-history"></i> 搜索历史</span>
-                            <button class="clear-btn">清除全部</button>
+                    <!-- 模式切换开关：关联搜索 / 精准搜索 -->
+                    <div class="search-mode-toggle">
+                        <!-- .toggle-track：滑块轨道，position:relative 为 .toggle-thumb 提供定位坐标系 -->
+                        <div class="toggle-track">
+                            <!-- active class 控制当前选中项的文字颜色，由 JS 动态切换 -->
+                            <span class="toggle-label active">
+                                <i class="fas fa-link"></i> 关联搜索
+                            </span>
+                            <span class="toggle-label">
+                                <i class="fas fa-crosshairs"></i> 精准搜索
+                            </span>
+                            <!-- 蓝色滑块：JS 通过修改 transform: translateX() 让它左右滑动 -->
+                            <div class="toggle-thumb"></div>
                         </div>
-                        <!-- 搜索历史列表：将来可以由 JS 动态渲染 -->
-                        <ul class="dropdown-list">
-                            <li><a href="#">です的用法</a></li>
-                            <li><a href="#">N3 文法</a></li>
-                        </ul>
                     </div>
+
+                    <!-- 输入框组：搜索图标 + 输入框 + 清空按钮 -->
+                    <!-- .input-group：position:relative 容器，让图标和清空按钮能绝对定位在输入框内 -->
+                    <div class="input-group">
+                        <!-- 搜索图标：纯装饰，CSS 中设置了 pointer-events:none，点击会穿透到输入框 -->
+                        <i class="fas fa-search search-icon"></i>
+
+                        <!-- autocomplete="off"：关闭浏览器自动填充，避免覆盖自定义的搜索历史下拉面板 -->
+                        <input type="text" placeholder="搜索单词、文章…" class="search-input" autocomplete="off">
+
+                        <!-- 清空按钮：CSS 中默认 display:none，有内容时由 JS 控制显示 -->
+                        <button class="search-clear"><i class="fas fa-times"></i></button>
+                    </div>
+
+                    <!-- 搜索结果下拉面板：CSS 中默认 display:none，输入框聚焦时由 JS 控制显示 -->
+                    <div class="search-dropdown">
+                        <div class="dropdown-section">
+                            <div class="dropdown-header">
+                                <span><i class="fas fa-history"></i> 搜索历史</span>
+                                <button class="clear-btn">清除全部</button>
+                            </div>
+                            <!-- 搜索历史列表：将来可以由 JS 动态渲染 -->
+                            <ul class="dropdown-list">
+                                <li><a href="#">です的用法</a></li>
+                                <li><a href="#">N3 文法</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
+            </div>
+            <!-- / .home-search-wrapper -->
+
+            <!-- ===== 功能卡片网格 (Feature Cards Grid) ===== -->
+            <!-- .fuguang-grid-container：CSS Grid 容器，自动将子元素排成四列 -->
+            <div class="fuguang-grid-container">
+
+                <!-- 每张卡片是一个 <a> 标签，整个卡片区域可点击跳转 -->
+                <!-- .fuguang-card 同时承载静止样式、悬停特效和扫光动画 -->
+
+                <a href="#" class="fuguang-card">
+                    <!-- .card-icon：圆形金属图标基座，图标使用 Font Awesome class -->
+                    <div class="card-icon"><i class="fa-solid fa-seedling"></i></div>
+                    <h2>入门</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-book-open"></i></div>
+                    <h2>单词</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-pen-nib"></i></div>
+                    <h2>语法</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h2>测试</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                    <h2>练习</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-door-open"></i></div>
+                    <h2>随机传送</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-tv"></i></div>
+                    <h2>日本新闻</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-chess-rook"></i></div>
+                    <h2>城镇中心</h2>
+                </a>
 
             </div>
-        </div>
-        <!-- / .home-search-wrapper -->
+            <!-- / .fuguang-grid-container -->
 
-        <!-- ===== 功能卡片网格 (Feature Cards Grid) ===== -->
-        <!-- .fuguang-grid-container：CSS Grid 容器，自动将子元素排成四列 -->
-        <div class="fuguang-grid-container">
+        </section>
+    </main>
 
-            <!-- 每张卡片是一个 <a> 标签，整个卡片区域可点击跳转 -->
-            <!-- .fuguang-card 同时承载静止样式、悬停特效和扫光动画 -->
+    <!-- 临时撑高占位块，用于测试页面滚动效果，上线前应删除 -->
+    <div style="height: 1000px;"></div>
 
-            <a href="#" class="fuguang-card">
-                <!-- .card-icon：圆形金属图标基座，图标使用 Font Awesome class -->
-                <div class="card-icon"><i class="fa-solid fa-seedling"></i></div>
-                <h2>入门</h2>
-            </a>
-
-            <a href="#" class="fuguang-card">
-                <div class="card-icon"><i class="fa-solid fa-book-open"></i></div>
-                <h2>单词</h2>
-            </a>
-
-            <a href="#" class="fuguang-card">
-                <div class="card-icon"><i class="fa-solid fa-pen-nib"></i></div>
-                <h2>语法</h2>
-            </a>
-
-            <a href="#" class="fuguang-card">
-                <div class="card-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-                <h2>测试</h2>
-            </a>
-
-            <a href="#" class="fuguang-card">
-                <div class="card-icon"><i class="fa-solid fa-laptop-code"></i></div>
-                <h2>练习</h2>
-            </a>
-
-            <a href="#" class="fuguang-card">
-                <div class="card-icon"><i class="fa-solid fa-door-open"></i></div>
-                <h2>随机传送</h2>
-            </a>
-
-            <a href="#" class="fuguang-card">
-                <div class="card-icon"><i class="fa-solid fa-tv"></i></div>
-                <h2>日本新闻</h2>
-            </a>
-
-            <a href="#" class="fuguang-card">
-                <div class="card-icon"><i class="fa-solid fa-chess-rook"></i></div>
-                <h2>城镇中心</h2>
-            </a>
-
-        </div>
-        <!-- / .fuguang-grid-container -->
-
-    </section>
-</main>
-
-<!-- 临时撑高占位块，用于测试页面滚动效果，上线前应删除 -->
-<div style="height: 1000px;"></div>
-
-<!-- =========================================
+    <!-- =========================================
    底部导航栏 (Bottom Navigation Bar)
    第二个 <nav>，语义上是底部独立的导航区域
 ========================================= -->
-<nav class="fuguang-bottom-nav">
-    <!-- <ul> 无序列表：导航栏按钮语义上是"一组导航项目"，用列表结构最合适 -->
-    <ul class="bottom-nav-list">
+    <nav class="fuguang-bottom-nav">
+        <!-- <ul> 无序列表：导航栏按钮语义上是"一组导航项目"，用列表结构最合适 -->
+        <ul class="bottom-nav-list">
 
-        <li class="nav-item">
-            <!-- <button>：纯触发交互，不跳转页面，使用 button 标签 -->
-            <button class="nav-btn">
-                <i class="fa-solid fa-bars"></i>
-                <span>菜单</span>
-            </button>
-        </li>
+            <li class="nav-item">
+                <!-- <button>：纯触发交互，不跳转页面，使用 button 标签 -->
+                <button class="nav-btn">
+                    <i class="fa-solid fa-bars"></i>
+                    <span>菜单</span>
+                </button>
+            </li>
 
-        <li class="nav-item">
-            <button class="nav-btn">
-                <i class="fa-solid fa-search"></i>
-                <span>搜索</span>
-            </button>
-        </li>
+            <li class="nav-item">
+                <button class="nav-btn">
+                    <i class="fa-solid fa-search"></i>
+                    <span>搜索</span>
+                </button>
+            </li>
 
-        <li class="nav-item">
-            <button class="nav-btn">
-                <!-- .icon-wrapper：position:relative 容器，为角标提供定位坐标系 -->
-                <div class="icon-wrapper">
-                    <i class="fa-regular fa-heart"></i>
-                    <!-- .badge：消息数字角标，绝对定位在图标右上角 -->
-                    <span class="badge">98</span>
-                </div>
-                <span>喜欢</span>
-            </button>
-        </li>
+            <li class="nav-item">
+                <button class="nav-btn">
+                    <!-- .icon-wrapper：position:relative 容器，为角标提供定位坐标系 -->
+                    <div class="icon-wrapper">
+                        <i class="fa-regular fa-heart"></i>
+                        <!-- .badge：消息数字角标，绝对定位在图标右上角 -->
+                        <span class="badge">15</span>
+                    </div>
+                    <span>喜欢</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-btn">
+                    <!-- .icon-wrapper：position:relative 容器，为角标提供定位坐标系 -->
+                    <div class="icon-wrapper">
+                        <i class="fa-regular fa-heart"></i>
+                        <!-- .badge：消息数字角标，绝对定位在图标右上角 -->
+                        <span class="badge">3</span>
+                    </div>
+                    <span>收藏</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <!-- <a>：点击后需要跳转页面，使用 <a> 标签而非 button -->
+                <a href="#" class="nav-btn">
+                    <i class="fa-solid fa-user"></i>
+                    <span>账号</span>
+                </a>
+            </li>
 
-        <li class="nav-item">
-            <!-- <a>：点击后需要跳转页面，使用 <a> 标签而非 button -->
-            <a href="#" class="nav-btn">
-                <i class="fa-solid fa-user"></i>
-                <span>账号</span>
-            </a>
-        </li>
+        </ul>
+    </nav>
 
-    </ul>
-</nav>
-
-<!-- =========================================
+    <!-- =========================================
    页面交互逻辑 (JavaScript)
    <script> 放在 </body> 前：确保 HTML 元素全部加载完毕后再执行 JS
 ========================================= -->
-<script>
+    <script>
 
-    // ===== 搜索模式切换开关 =====
+        // ===== 搜索模式切换开关 =====
 
-    // querySelector：在文档中找到第一个匹配该 CSS 选择器的元素
-    const toggle = document.querySelector('.search-mode-toggle');
-    const thumb  = document.querySelector('.toggle-thumb');
-    // querySelectorAll：找到所有匹配的元素，返回一个 NodeList（类似数组）
-    const labels = document.querySelectorAll('.toggle-label');
+        // querySelector：在文档中找到第一个匹配该 CSS 选择器的元素
+        const toggle = document.querySelector('.search-mode-toggle');
+        const thumb = document.querySelector('.toggle-thumb');
+        // querySelectorAll：找到所有匹配的元素，返回一个 NodeList（类似数组）
+        const labels = document.querySelectorAll('.toggle-label');
 
-    // addEventListener('click', callback)：监听点击事件，点击时执行箭头函数
-    toggle.addEventListener('click', () => {
+        // addEventListener('click', callback)：监听点击事件，点击时执行箭头函数
+        toggle.addEventListener('click', () => {
 
-        // 读取滑块当前的 transform 值，判断它是否已经在右侧
-        const isRight = thumb.style.transform === 'translateX(100%)';
+            // 读取滑块当前的 transform 值，判断它是否已经在右侧
+            const isRight = thumb.style.transform === 'translateX(100%)';
 
-        // 三元运算符：isRight 为真 → 滑回左边(0%)，否则 → 滑到右边(100%)
-        thumb.style.transform = isRight ? 'translateX(0)' : 'translateX(100%)';
+            // 三元运算符：isRight 为真 → 滑回左边(0%)，否则 → 滑到右边(100%)
+            thumb.style.transform = isRight ? 'translateX(0)' : 'translateX(100%)';
 
-        // forEach 遍历所有标签，toggle('active') 有则删除，无则添加
-        labels.forEach(label => label.classList.toggle('active'));
-    });
+            // forEach 遍历所有标签，toggle('active') 有则删除，无则添加
+            labels.forEach(label => label.classList.toggle('active'));
+        });
 
 
-    // ===== 搜索输入框交互 =====
+        // ===== 搜索输入框交互 =====
 
-    const input     = document.querySelector('.search-input');
-    const dropdown  = document.querySelector('.search-dropdown');
-    const clearBtn  = document.querySelector('.search-clear');
+        const input = document.querySelector('.search-input');
+        const dropdown = document.querySelector('.search-dropdown');
+        const clearBtn = document.querySelector('.search-clear');
 
-    // 输入框获得焦点时（用户点击输入框），显示下拉历史面板
-    input.addEventListener('focus', () => {
-        dropdown.style.display = 'block';
-    });
+        // 输入框获得焦点时（用户点击输入框），显示下拉历史面板
+        input.addEventListener('focus', () => {
+            dropdown.style.display = 'block';
+        });
 
-    // 用户每次输入内容时触发，input.value 不为空则显示清空按钮，否则隐藏
-    input.addEventListener('input', () => {
-        clearBtn.style.display = input.value ? 'block' : 'none';
-    });
+        // 用户每次输入内容时触发，input.value 不为空则显示清空按钮，否则隐藏
+        input.addEventListener('input', () => {
+            clearBtn.style.display = input.value ? 'block' : 'none';
+        });
 
-    // 点击清空按钮：清空输入框内容 → 隐藏清空按钮 → 让输入框重新聚焦
-    clearBtn.addEventListener('click', () => {
-        input.value = '';
-        clearBtn.style.display = 'none';
-        input.focus();
-    });
+        // 点击清空按钮：清空输入框内容 → 隐藏清空按钮 → 让输入框重新聚焦
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            clearBtn.style.display = 'none';
+            input.focus();
+        });
 
-    // 点击页面任意位置时：判断点击目标是否在 .home-search 内部
-    // e.target.closest('.home-search')：从点击目标向上查找，找到则返回元素，否则返回 null
-    // 如果点击的不在搜索框内，则关闭下拉面板
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.home-search')) {
-            dropdown.style.display = 'none';
-        }
-    });
+        // 点击页面任意位置时：判断点击目标是否在 .home-search 内部
+        // e.target.closest('.home-search')：从点击目标向上查找，找到则返回元素，否则返回 null
+        // 如果点击的不在搜索框内，则关闭下拉面板
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.home-search')) {
+                dropdown.style.display = 'none';
+            }
+        });
 
-</script>
+    </script>
 
 </body>
 

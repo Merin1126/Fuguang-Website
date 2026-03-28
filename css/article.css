@@ -1,0 +1,89 @@
+/* =========================================
+   📖 扶光通用文章排版引擎 (Article Typo Engine)
+========================================= */
+
+.fuguang-article {
+    color: var(--text-body);
+    animation: fadeIn 0.8s ease;
+    /* 页面加载时的轻微淡入效果 */
+}
+
+/* 头部信息区 */
+.article-header {
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+}
+
+.article-meta {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 12px;
+}
+
+.article-meta .tag {
+    color: var(--color-primary);
+    /* 标签用雾霾蓝 */
+    border: 1px solid var(--border-light);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.article-title {
+    font-size: 28px;
+    color: var(--text-title);
+    line-height: 1.4;
+}
+
+/* 正文排版 (极其重要：控制行高与段落间距) */
+.article-content p {
+    font-size: 16px;
+    line-height: 1.8;
+    /* 黄金阅读行高 */
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+    /* 字间距微调 */
+}
+
+/* 引用块 (Blockquote) 样式 */
+.article-content blockquote {
+    border-left: 4px solid var(--color-accent);
+    /* 左侧香槟金竖线 */
+    background: rgba(255, 255, 255, 0.03);
+    padding: 16px 20px;
+    margin: 32px 0;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--text-title);
+}
+
+/* 🇯🇵 日语注音专属样式 (Ruby) */
+ruby {
+    font-family: 'M PLUS 1', sans-serif;
+    ruby-align: center;
+    /* 假名居中对齐汉字 */
+}
+
+rt {
+    font-size: 10px;
+    /* 假名必须要小 */
+    color: var(--color-primary);
+    /* 假名用雾霾蓝，和正文区分开 */
+    transform: translateY(-2px);
+    /* 把假名稍微往下压一点点，贴近汉字 */
+}
+
+/* 简单的淡入动画 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
