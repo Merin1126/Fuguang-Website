@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+AUDIT_SCRIPT="$REPO_ROOT/audit-lang-ja.sh"
+
+if [[ ! -x "$AUDIT_SCRIPT" ]]; then
+    echo "[pre-commit] 未找到可执行审计脚本: $AUDIT_SCRIPT"
+    echo "[pre-commit] 请先执行: chmod +x ./audit-lang-ja.sh"
+    exit 1
+fi
+
+echo "[pre-commit] 运行 lang=ja 审计..."
+"$AUDIT_SCRIPT" --strict "$REPO_ROOT"
+echo "[pre-commit] 通过。"

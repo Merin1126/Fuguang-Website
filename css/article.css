@@ -336,17 +336,21 @@ rt {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: #fff;
+    background: var(--color-accent);
     color: #1a1a1a;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
     flex: 0 0 auto;
+    overflow: hidden;
 }
 
-.fuguang-navbar .nav-center .navbar-topic-logo i {
-    font-size: 14px;
+.fuguang-navbar .nav-center .navbar-topic-logo img {
+    width: 24px;
+    height: 24px;
+    display: block;
+    object-fit: contain;
 }
 
 .fuguang-navbar .nav-center .topic-link {

@@ -27,6 +27,9 @@
 
     <!-- 引入 Font Awesome 6.4.0 图标库（CDN 远程版本），提供所有 fa-* 图标 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 标签页图标：使用你维护的 favicon-tab.svg，并强制刷新缓存 -->
+    <link rel="icon" type="image/svg+xml" sizes="any" href="./favicon-tab.svg?v=5">
+    <link rel="shortcut icon" href="./favicon-tab.svg?v=5">
 </head>
 
 <body>
@@ -42,9 +45,9 @@
 
         <!-- 中间列：Logo -->
         <div class="nav-center">
-            <!-- href="#" 是临时占位链接，正式上线时替换为首页路径
-             fa-sun 是 Font Awesome 的太阳图标 class -->
-            <a href="#" class="circle-logo"><i class="fa-solid fa-sun"></i></a>
+            <a href="index.html" class="circle-logo" title="返回首页">
+                <img src="favicon.svg" alt="扶光日语 Logo">
+            </a>
         </div>
 
         <!-- 右侧列：登录按钮 -->
@@ -112,7 +115,7 @@
                             </div>
                             <!-- 搜索历史列表：将来可以由 JS 动态渲染 -->
                             <ul class="dropdown-list">
-                                <li><a href="#">です的用法</a></li>
+                                <li><a href="#"><span lang="ja">です</span>的用法</a></li>
                                 <li><a href="#">N3 文法</a></li>
                             </ul>
                         </div>

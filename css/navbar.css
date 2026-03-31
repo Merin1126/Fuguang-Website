@@ -51,8 +51,8 @@
 .circle-logo {
     width: 46px;
     height: 46px;
-    background-color: #ffffff;
-    /* 白色底，和深色导航栏形成强对比 */
+    background-color: var(--color-accent);
+    /* 改为网站香槟配色 */
     color: #1a1a1a;
     /* 图标颜色深色，与白底形成对比 */
     border-radius: 50%;
@@ -66,11 +66,20 @@
     /* 去掉 <a> 标签自带的下划线 */
     transition: transform 0.3s ease;
     /* 悬停缩放动画，0.3s 是肉眼感受自然的最短时间 */
+    overflow: hidden;
+    /* 保险裁切，防止图形边缘溢出 */
 }
 
 .circle-logo:hover {
     transform: scale(1.1);
     /* 放大到 110%，subtle 的反馈感 */
+}
+
+.circle-logo img {
+    width: 46px;
+    height: 46px;
+    display: block;
+    object-fit: contain;
 }
 
 /* 登录按钮 */

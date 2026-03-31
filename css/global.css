@@ -49,8 +49,11 @@
 body {
     background-color: var(--bg-main);
     /* 使用变量，方便统一修改全站背景色 */
-    font-family: 'M PLUS 1', sans-serif;
-    /* 优先用谷歌字体，加载失败则降级到系统无衬线字体 */
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC',
+        'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC',
+        'Source Han Sans SC', 'WenQuanYi Micro Hei', 'Segoe UI',
+        Roboto, 'Helvetica Neue', Arial, sans-serif;
+    /* 全局默认改为系统字体栈：中文优先使用各平台原生无衬线字体 */
 }
 
 /* 全站内容限宽容器：700px 黄金宽度，过宽的正文行阅读疲劳 */
@@ -63,4 +66,9 @@ body {
     /* 水平方向自动分配左右外边距，实现居中 */
     padding: 0 16px;
     /* 两侧留 16px 安全缝隙，防止手机端文字贴边 */
+}
+
+/* 仅日文语义块使用 M PLUS 1，避免中文出现异体字 */
+[lang="ja"] {
+    font-family: 'M PLUS 1', sans-serif;
 }
