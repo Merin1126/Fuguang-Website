@@ -339,3 +339,192 @@
     display: none;
     /* 默认隐藏 */
 }
+
+/* =========================================
+   品牌故事区 (Brand Story Container)
+========================================= */
+#brandStoryContainer {
+    margin-top: 56px;
+}
+
+.home-brand-story {
+    margin: 0 auto 40px;
+    max-width: 800px;
+    padding: 40px 20px;
+    background-color: var(--bg-main);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px hsla(0, 0%, 100%, .1);
+    text-align: center;
+}
+
+.home-brand-story__logo-link {
+    display: block;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 30px;
+    background-image: url('../favicon.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: transform .3s ease;
+    cursor: pointer;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.home-brand-story__logo-link:hover {
+    transform: scale(1.05);
+}
+
+.home-brand-story__title {
+    color: var(--text-title);
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+.home-brand-story__intro {
+    color: var(--text-body);
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 24px;
+}
+
+.home-brand-story__founder-info {
+    color: var(--text-body);
+}
+
+.home-brand-story__founder-signature {
+    position: relative;
+    margin-top: 8px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    color: var(--text-body);
+}
+
+.home-brand-story__founder-signature::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+}
+
+.home-brand-story__founder-signature::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+}
+
+.home-brand-story__founder-role {
+    margin-right: 6px;
+}
+
+.home-brand-story__founder-name {
+    color: var(--color-primary);
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+}
+
+.home-brand-story__founder-name::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+    opacity: 0;
+    transform: scaleX(0);
+    transition: all .3s ease;
+}
+
+.home-brand-story__founder-name:hover::after {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+.home-brand-story__actions {
+    margin-top: 34px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.home-brand-story__social-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.home-brand-story__social-divider {
+    width: 90px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+}
+
+.author-profile__social-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+.author-profile__social-link {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-light);
+    color: var(--text-body);
+    font-size: 18px;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: all .3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.author-profile__social-link::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(163, 184, 214, 0.2), transparent);
+    transition: left .5s ease;
+}
+
+.author-profile__social-link i {
+    color: var(--text-body);
+    position: relative;
+    z-index: 1;
+    transition: color .3s ease;
+}
+
+.author-profile__social-link:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 12px rgba(163, 184, 214, 0.18);
+}
+
+.author-profile__social-link:hover::before {
+    left: 100%;
+}
+
+.author-profile__social-link:hover i {
+    color: var(--color-primary);
+}
