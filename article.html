@@ -17,6 +17,14 @@
         <div class="nav-left"></div>
         <div class="nav-center">
             <a href="index.html" class="circle-logo"><i class="fa-solid fa-sun"></i></a>
+            <div class="navbar-topic-group" id="navbar-topic-group">
+                <a href="index.html" class="navbar-topic-logo" title="返回首页">
+                    <i class="fa-solid fa-sun"></i>
+                </a>
+                <a class="topic-link" id="navbar-topic-link" href="#top" title="返回文章顶部">
+                    <span id="navbar-topic-text">文章标题</span>
+                </a>
+            </div>
         </div>
         <div class="nav-right">
             <a href="#" class="login-btn">登录</a>
@@ -43,6 +51,7 @@
             </header>
 
             <section class="article-content">
+                <h2 id="section-1">1. 初识木漏れ日</h2>
                 <p>你好，我是扶光的站长。很高兴能在这里与你相遇。</p>
 
                 <p>学习一门语言，就像是打开了一扇通往新世界的大门。比如，日语中最具代表性的词汇：
@@ -52,13 +61,33 @@
                 <p>它的意思是“从树叶缝隙间倾泻下来的阳光”。这种细腻的表达，正是我们在学习
                     <ruby>日本語<rt>にほんご</rt></ruby> 时，最能感受到的文化底蕴。
                 </p>
+                <div style="height: 600px;"></div>
 
+                <h2 id="section-3">3. 结语与展望</h2>
                 <blockquote>
                     <p>“语言的边界，就是我们世界的边界。”</p>
                 </blockquote>
+                <div style="height: 300px;"></div>
+
+
             </section>
 
         </article>
+        <aside class="fuguang-toc">
+            <div class="toc-track">
+                <div class="track-line"></div>
+                <div class="track-thumb" id="toc-thumb"></div>
+                <div class="toc-last-read-marker" id="toc-last-read" style="display: none;">
+                    <div class="last-read-line"></div> <button class="last-read-btn Bento-style-btn"
+                        id="toc-back-btn">返回</button>
+                </div>
+            </div>
+
+            <div class="toc-info">
+                <div class="toc-progress" id="toc-progress">0%</div>
+                <div class="toc-current-title" id="toc-title">开始阅读</div>
+            </div>
+        </aside>
     </main>
     <nav class="fuguang-bottom-nav">
         <ul class="bottom-nav-list">
@@ -101,6 +130,346 @@
         </ul>
     </nav>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // =====================================================
+            // 1) DOM 查询与基础防御
+            // =====================================================
+            const article = document.querySelector('.fuguang-article');
+            const articleTitleEl = document.querySelector('.article-title');
+            const navbarEl = document.querySelector('.fuguang-navbar');
+            const navbarRight = document.querySelector('.fuguang-navbar .nav-right');
+            const navbarLogo = document.querySelector('.nav-center .circle-logo');
+            const navbarTopicGroup = document.getElementById('navbar-topic-group');
+            const navbarTopicLink = document.getElementById('navbar-topic-link');
+            const navbarTopicText = document.getElementById('navbar-topic-text');
+            const toc = document.querySelector('.fuguang-toc');
+            const track = toc?.querySelector('.toc-track');
+            const thumb = document.getElementById('toc-thumb');
+            const info = toc?.querySelector('.toc-info');
+            const progressText = document.getElementById('toc-progress');
+            const titleText = document.getElementById('toc-title');
+            const lastReadMarker = document.getElementById('toc-last-read');
+            const backBtn = document.getElementById('toc-back-btn');
+
+            // =====================================================
+            // 1.1) 顶部导航标题跟随：超过文章标题后显示
+            // =====================================================
+            function syncNavbarTopicTypography() {
+                if (!articleTitleEl || !navbarTopicLink) return;
+                const titleStyles = window.getComputedStyle(articleTitleEl);
+
+                // 让导航栏标题与文章主标题保持一致的字号与字重
+                navbarTopicLink.style.fontSize = titleStyles.fontSize;
+                navbarTopicLink.style.fontWeight = titleStyles.fontWeight;
+                navbarTopicLink.style.lineHeight = titleStyles.lineHeight;
+                navbarTopicLink.style.letterSpacing = titleStyles.letterSpacing;
+            }
+
+            function syncNavbarTopicPosition() {
+                if (!articleTitleEl || !navbarTopicGroup || !navbarTopicLink || !navbarEl || !navbarRight) return;
+
+                const titleRect = articleTitleEl.getBoundingClientRect();
+                const navRect = navbarEl.getBoundingClientRect();
+                const navRightRect = navbarRight.getBoundingClientRect();
+
+                // 与文章主标题左边缘对齐，保证相对位置一致
+                const groupLeft = Math.max(16, titleRect.left);
+                const groupTop = navRect.top + navRect.height / 2;
+                navbarTopicGroup.style.left = `${groupLeft}px`;
+                navbarTopicGroup.style.top = `${groupTop}px`;
+
+                // 预留右侧登录按钮区域，防止标题挤压重叠
+                const logoAndGap = 42; // 32px logo + 10px gap
+                const maxTitleWidth = Math.max(120, navRightRect.left - 24 - groupLeft - logoAndGap);
+                navbarTopicLink.style.maxWidth = `${maxTitleWidth}px`;
+            }
+
+            function updateNavbarReadingIndicator() {
+                if (!articleTitleEl || !navbarLogo || !navbarTopicGroup) return;
+
+                // 当文章主标题滚出导航栏可视区后，切换为“当前阅读文章标题”
+                const triggerOffset = 70; // 顶部导航高度
+                const titleRect = articleTitleEl.getBoundingClientRect();
+                const shouldShowTopic = titleRect.bottom <= triggerOffset;
+
+                navbarTopicGroup.classList.toggle('is-visible', shouldShowTopic);
+                navbarLogo.classList.toggle('is-hidden', shouldShowTopic);
+            }
+
+            // 将 H1 标题同步到导航栏文案，保持提示准确
+            if (articleTitleEl && navbarTopicText) {
+                navbarTopicText.textContent = articleTitleEl.textContent?.trim() || '当前文章';
+            }
+            syncNavbarTopicTypography();
+            syncNavbarTopicPosition();
+
+            // 导航提示独立于 TOC 存在
+            updateNavbarReadingIndicator();
+            window.addEventListener('scroll', updateNavbarReadingIndicator, { passive: true });
+            window.addEventListener('resize', () => {
+                syncNavbarTopicTypography();
+                syncNavbarTopicPosition();
+                updateNavbarReadingIndicator();
+            });
+
+            // 移动端或结构缺失时退出 TOC 逻辑，但不影响上面的导航提示逻辑
+            if (!article || !toc || !track || !thumb || !info || !progressText || !titleText) return;
+            if (getComputedStyle(toc).display === 'none') return;
+
+            const articleContent = article.querySelector('.article-content');
+            const headers = Array.from(articleContent.querySelectorAll('h2, h3'));
+
+            // 本地存储 key：按文章路径隔离
+            const STORAGE_KEY = `fuguang_last_read_${window.location.pathname}`;
+
+            // =====================================================
+            // 2) 统一工具函数
+            // =====================================================
+            const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+            function getScrollMetrics() {
+                const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+                const scrollHeight = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+                return { scrollTop, scrollHeight };
+            }
+
+            function getTrackMetrics() {
+                const trackHeight = track.clientHeight;
+                const thumbHeight = thumb.offsetHeight;
+                const maxThumbTop = Math.max(0, trackHeight - thumbHeight);
+                return { trackHeight, thumbHeight, maxThumbTop };
+            }
+
+            function setInfoTopByThumbTop(thumbTop) {
+                // 让右侧信息块跟随滑块；同时做边界保护，避免底部溢出
+                const { trackHeight } = getTrackMetrics();
+                const infoHeight = info.offsetHeight || 0;
+                const maxInfoTop = Math.max(0, trackHeight - infoHeight);
+                const infoTop = clamp(thumbTop, 0, maxInfoTop);
+                info.style.top = `${infoTop}px`;
+            }
+
+            function setThumbAndInfoByRatio(ratio) {
+                const { maxThumbTop } = getTrackMetrics();
+                const thumbTop = clamp(ratio, 0, 1) * maxThumbTop;
+                thumb.style.top = `${thumbTop}px`;
+                setInfoTopByThumbTop(thumbTop);
+            }
+
+            // =====================================================
+            // 3) “返回上次阅读”模块：显示/隐藏与目标位置管理
+            // =====================================================
+            // 当前可返回的目标位置（优先使用“本次会话读到的最高点”）
+            let markerTargetScrollTop = 0;
+
+            function hideLastReadMarker() {
+                if (!lastReadMarker) return;
+                lastReadMarker.style.opacity = '0';
+                lastReadMarker.style.display = 'none';
+            }
+
+            function showLastReadMarker(targetScrollTop) {
+                if (!lastReadMarker) return;
+                const { scrollHeight } = getScrollMetrics();
+                if (scrollHeight <= 0) return;
+
+                const { trackHeight } = getTrackMetrics();
+                const markerRatio = clamp(targetScrollTop / scrollHeight, 0, 1);
+                const markerTop = markerRatio * trackHeight;
+
+                // 由 CSS 的 transform: translateY(-50%) 负责居中对齐
+                lastReadMarker.style.top = `${markerTop}px`;
+                lastReadMarker.style.display = 'flex';
+                lastReadMarker.style.opacity = '1';
+            }
+
+            function initLastReadModule() {
+                if (!backBtn) return;
+
+                // 初始化时先隐藏，等待“下滑后再上滑”再出现
+                hideLastReadMarker();
+
+                backBtn.addEventListener('click', () => {
+                    if (markerTargetScrollTop <= 0) return;
+                    window.scrollTo({
+                        top: markerTargetScrollTop,
+                        behavior: 'smooth'
+                    });
+                    hideLastReadMarker();
+                });
+            }
+
+            // =====================================================
+            // 4) Scrollspy 主更新：进度、滑块、当前标题、持久化
+            // =====================================================
+            let isDragging = false;
+            let lastScrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+            let hasScrolledDown = false;
+            let scrollDirection = 'idle';
+            const savedInitialTop = Number(localStorage.getItem(STORAGE_KEY));
+            // 记录“当前这轮下滑”触达的最高点，而不是全局最高点
+            let downPhasePeakTop = Number.isFinite(savedInitialTop) ? Math.max(savedInitialTop, lastScrollTop) : lastScrollTop;
+
+            function updateScrollspy() {
+                // 拖拽期间暂停被动滚动刷新，避免滑块抖动/抢状态
+                if (isDragging) return;
+
+                const { scrollTop, scrollHeight } = getScrollMetrics();
+                if (scrollHeight <= 0) return;
+
+                const progressRatio = clamp(scrollTop / scrollHeight, 0, 1);
+                const progressPercent = Math.round(progressRatio * 100);
+
+                // 1) 更新百分比
+                progressText.innerText = `${progressPercent}%`;
+
+                // 2) 更新滑块与右侧信息块位置
+                setThumbAndInfoByRatio(progressRatio);
+
+                // 3) 更新当前标题（从后往前找离顶部最近且已读到的标题）
+                const detectionThreshold = 150;
+                let currentSection = '开始阅读';
+                for (let i = headers.length - 1; i >= 0; i--) {
+                    if (headers[i].getBoundingClientRect().top < detectionThreshold) {
+                        currentSection = headers[i].innerText.trim();
+                        break;
+                    }
+                }
+                titleText.innerText = currentSection;
+
+                // 4) 根据滚动方向控制“返回”模块出现逻辑
+                const directionDelta = scrollTop - lastScrollTop;
+                if (directionDelta > 2) {
+                    // 用户正在下滑：进入/持续下滑阶段，更新“本轮下滑最高点”
+                    hasScrolledDown = true;
+                    if (scrollDirection !== 'down') {
+                        // 方向刚切换到下滑，重置本轮峰值
+                        downPhasePeakTop = scrollTop;
+                    } else {
+                        downPhasePeakTop = Math.max(downPhasePeakTop, scrollTop);
+                    }
+                    markerTargetScrollTop = downPhasePeakTop;
+                    hideLastReadMarker();
+                    scrollDirection = 'down';
+                } else if (directionDelta < -2) {
+                    // 用户正在上滑：在“下滑 -> 上滑”切换瞬间，锁定返回目标为下滑峰值
+                    if (scrollDirection !== 'up' && hasScrolledDown) {
+                        markerTargetScrollTop = Math.max(downPhasePeakTop, lastScrollTop);
+                    }
+                    // 只有先发生过下滑才允许显示“返回”模块
+                    const shouldShowBack = hasScrolledDown && (markerTargetScrollTop - scrollTop > 80);
+                    if (shouldShowBack) {
+                        showLastReadMarker(markerTargetScrollTop);
+                    }
+                    scrollDirection = 'up';
+                }
+                lastScrollTop = scrollTop;
+
+                // 5) 保存阅读记忆（关键修复：避免刷新时立刻把旧记忆覆盖成 0）
+                if (scrollTop > 20) {
+                    localStorage.setItem(STORAGE_KEY, String(Math.round(scrollTop)));
+                }
+            }
+
+            // =====================================================
+            // 5) 滑块拖拽：鼠标 + 触摸
+            // =====================================================
+            let dragOffsetY = 0;
+            let currentDragRatio = 0;
+
+            function getClientY(event) {
+                if (event.touches && event.touches.length) return event.touches[0].clientY;
+                if (event.changedTouches && event.changedTouches.length) return event.changedTouches[0].clientY;
+                return event.clientY;
+            }
+
+            function startDrag(event) {
+                event.preventDefault();
+                const thumbRect = thumb.getBoundingClientRect();
+                const clientY = getClientY(event);
+                dragOffsetY = clientY - thumbRect.top;
+
+                isDragging = true;
+                thumb.classList.add('is-dragging');
+            }
+
+            function moveDrag(event) {
+                if (!isDragging) return;
+                event.preventDefault();
+
+                const clientY = getClientY(event);
+                const trackRect = track.getBoundingClientRect();
+                const { maxThumbTop } = getTrackMetrics();
+
+                // 以“手指/鼠标按下时的相对位置”为锚，防止拖拽瞬间跳动
+                const thumbTop = clamp(clientY - trackRect.top - dragOffsetY, 0, maxThumbTop);
+                currentDragRatio = maxThumbTop > 0 ? thumbTop / maxThumbTop : 0;
+
+                thumb.style.top = `${thumbTop}px`;
+                setInfoTopByThumbTop(thumbTop);
+                progressText.innerText = `${Math.round(currentDragRatio * 100)}%`;
+            }
+
+            function endDrag() {
+                if (!isDragging) return;
+                isDragging = false;
+                thumb.classList.remove('is-dragging');
+
+                // 按拖拽比例换算到文档滚动位置，并执行平滑跳转
+                const { scrollHeight } = getScrollMetrics();
+                const targetTop = clamp(currentDragRatio, 0, 1) * scrollHeight;
+                window.scrollTo({
+                    top: targetTop,
+                    behavior: 'smooth'
+                });
+            }
+
+            // 鼠标事件
+            thumb.addEventListener('mousedown', startDrag);
+            window.addEventListener('mousemove', moveDrag);
+            window.addEventListener('mouseup', endDrag);
+
+            // 触摸事件（touchmove 需要 passive:false 才能 preventDefault）
+            thumb.addEventListener('touchstart', startDrag, { passive: false });
+            window.addEventListener('touchmove', moveDrag, { passive: false });
+            window.addEventListener('touchend', endDrag);
+            window.addEventListener('touchcancel', endDrag);
+
+            // =====================================================
+            // 6) 事件绑定与初始化顺序
+            // =====================================================
+            // 初始化“返回上次阅读”模块（显示时机由滚动方向控制）
+            initLastReadModule();
+
+            // 再进行一次 UI 同步
+            updateScrollspy();
+
+            // 滚动监听（拖拽时会被 isDragging 门禁暂停）
+            window.addEventListener('scroll', updateScrollspy, { passive: true });
+
+            // 尺寸变化时重算位置（防抖）
+            let resizeTimer = null;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    updateScrollspy();
+                    // resize 后如果标记处于显示状态，重新计算其在轨道上的位置
+                    if (lastReadMarker && lastReadMarker.style.display !== 'none' && markerTargetScrollTop > 0) {
+                        showLastReadMarker(markerTargetScrollTop);
+                    }
+                }, 200);
+            });
+
+            // 页面离开前兜底保存一次，避免某些场景下滚动事件未触发导致无记忆
+            window.addEventListener('pagehide', () => {
+                const currentTop = window.scrollY || document.documentElement.scrollTop || 0;
+                if (currentTop > 20) {
+                    localStorage.setItem(STORAGE_KEY, String(Math.round(currentTop)));
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
