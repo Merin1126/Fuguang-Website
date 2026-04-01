@@ -1,0 +1,17 @@
+---
+const { mainHeading = "" } = Astro.props;
+---
+
+<nav class="fuguang-navbar">
+    <div class="nav-left"></div>
+    <div class="nav-center">
+        <a href="/" class="circle-logo" title="返回首页"><img src="/favicon.svg" alt="扶光日语 Logo"></a>
+        <div class="navbar-topic-group" id="navbar-topic-group">
+            <a href="/" class="navbar-topic-logo" title="返回首页"><img src="/favicon.svg" alt="扶光日语 Logo"></a>
+            <a class="topic-link" id="navbar-topic-link" href="#top" title="返回文章顶部">
+                <span id="navbar-topic-text">{mainHeading}</span>
+            </a>
+        </div>
+    </div>
+    <div class="nav-right"><a href="#" class="login-btn">登录</a></div>
+</nav>

@@ -130,10 +130,10 @@
     border-right: 1px solid rgba(255, 255, 255, 0.08);
     border-bottom: none;
     /* 贴地的底部不需要边框线 */
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(12px);
     /* 毛玻璃：模糊底部导航栏后方的页面内容 */
-    background-color: rgba(42, 42, 42, 0.85);
-    box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.6);
+    background-color: rgba(42, 42, 42, 0.7);
+    box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.6);
     /* 向上(负值)的阴影，制造从底部浮起的立体感 */
     z-index: 2000;
     /* 比顶部导航栏(1000)更高，确保始终在最上层 */

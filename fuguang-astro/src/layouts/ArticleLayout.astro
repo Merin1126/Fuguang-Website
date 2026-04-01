@@ -2,6 +2,8 @@
 // src/layouts/ArticleLayout.astro
 // 这里可以写一点服务器端的 JS，比如接收外面传进来的标题
 const { title, tag, date, mainHeading } = Astro.props;
+import Navbar from '../components/Navbar.astro';
+import BottomNav from '../components/BottomNav.astro';
 ---
 
 <!DOCTYPE html>
@@ -16,18 +18,7 @@ const { title, tag, date, mainHeading } = Astro.props;
     <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon-tab.svg">
 </head>
 <body>
-    <nav class="fuguang-navbar">
-        <div class="nav-left"></div>
-        <div class="nav-center">
-            <a href="/" class="circle-logo" title="返回首页"><img src="/favicon.svg" alt="扶光日语 Logo"></a>
-            <div class="navbar-topic-group" id="navbar-topic-group">
-                <a href="/" class="navbar-topic-logo" title="返回首页"><img src="/favicon.svg" alt="扶光日语 Logo"></a>
-                <a class="topic-link" id="navbar-topic-link" href="#top" title="返回文章顶部">
-                    <span id="navbar-topic-text">{mainHeading}</span> </a>
-            </div>
-        </div>
-        <div class="nav-right"><a href="#" class="login-btn">登录</a></div>
-    </nav>
+    <Navbar mainHeading={mainHeading} />
 
     <main id="top" class="home-main" style="padding-top: 100px; padding-bottom: 120px;">
         <div class="breadcrumbs">
@@ -67,46 +58,7 @@ const { title, tag, date, mainHeading } = Astro.props;
         </aside>
     </main>
 
-    <nav class="fuguang-bottom-nav">
-        <ul class="bottom-nav-list">
-            <li class="nav-item">
-                <button class="nav-btn">
-                    <i class="fa-solid fa-bars"></i>
-                    <span>菜单</span>
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-btn">
-                    <i class="fa-solid fa-search"></i>
-                    <span>搜索</span>
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-btn">
-                    <div class="icon-wrapper">
-                        <i class="fa-regular fa-heart"></i>
-                        <span class="badge">15</span>
-                    </div>
-                    <span>喜欢</span>
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-btn">
-                    <div class="icon-wrapper">
-                        <i class="fa-regular fa-star"></i>
-                        <span class="badge">3</span>
-                    </div>
-                    <span>收藏</span>
-                </button>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-btn">
-                    <i class="fa-solid fa-user"></i>
-                    <span>账号</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <BottomNav />
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
