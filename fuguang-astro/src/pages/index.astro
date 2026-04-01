@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>扶光日语 - 极简便当盒 UI</title>
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon-tab.svg">
+    <link rel="shortcut icon" href="/favicon-tab.svg">
+</head>
+<body>
+    <nav class="fuguang-navbar">
+        <div class="nav-left"></div>
+        <div class="nav-center">
+            <a href="/" class="circle-logo" title="返回首页">
+                <img src="/favicon.svg" alt="扶光日语 Logo">
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="#" class="login-btn">登录</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="home-main">
+            <div class="hero-section">
+                <h1>👇 见证终极复合魔法 👇</h1>
+                <p>将鼠标悬停在下方卡片上测试扫光与变白特效...</p>
+            </div>
+
+            <div class="home-search-wrapper">
+                <div class="home-search">
+                    <div class="search-mode-toggle">
+                        <div class="toggle-track">
+                            <span class="toggle-label active">
+                                <i class="fas fa-link"></i> 关联搜索
+                            </span>
+                            <span class="toggle-label">
+                                <i class="fas fa-crosshairs"></i> 精准搜索
+                            </span>
+                            <div class="toggle-thumb"></div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" placeholder="搜索单词、文章…" class="search-input" autocomplete="off">
+                        <button class="search-clear"><i class="fas fa-times"></i></button>
+                    </div>
+
+                    <div class="search-dropdown">
+                        <div class="dropdown-section">
+                            <div class="dropdown-header">
+                                <span><i class="fas fa-history"></i> 搜索历史</span>
+                                <button class="clear-btn">清除全部</button>
+                            </div>
+                            <ul class="dropdown-list">
+                                <li><a href="#"><span lang="ja">です</span>的用法</a></li>
+                                <li><a href="#">N3 文法</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fuguang-grid-container">
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-seedling"></i></div>
+                    <h2>入门</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-book-open"></i></div>
+                    <h2>单词</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-pen-nib"></i></div>
+                    <h2>语法</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h2>测试</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                    <h2>练习</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-door-open"></i></div>
+                    <h2>随机传送</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-tv"></i></div>
+                    <h2>日本新闻</h2>
+                </a>
+
+                <a href="#" class="fuguang-card">
+                    <div class="card-icon"><i class="fa-solid fa-chess-rook"></i></div>
+                    <h2>城镇中心</h2>
+                </a>
+            </div>
+
+            <div id="brandStoryContainer">
+                <section class="home-brand-story">
+                    <a href="#" class="home-brand-story__logo-link" title="关于扶光"></a>
+                    <h2 class="home-brand-story__title">欢迎来到扶光日语</h2>
+                    <div class="home-brand-story__intro">
+                        <div><span class="home-brand-story__founder-info">专为日语自学者设计的极简学习站</span></div>
+                        <div><span class="home-brand-story__founder-info">解决自学痛点，告别繁杂的视觉干扰</span></div>
+                        <div><span class="home-brand-story__founder-info">提供直击核心的语法与阅读训练</span></div>
+                    </div>
+                    <div class="home-brand-story__founder-signature">
+                        <span class="home-brand-story__founder-role">站长</span>
+                        <a href="/about" class="home-brand-story__founder-name">Fuguang</a>
+                    </div>
+                    <div class="home-brand-story__actions">
+                        <div class="home-brand-story__social-section">
+                            <div class="home-brand-story__social-divider"></div>
+                            <div class="author-profile__social-links">
+                                <a href="#" class="author-profile__social-link" title="微信">
+                                    <i class="fa-brands fa-weixin"></i>
+                                </a>
+                                <a href="#" class="author-profile__social-link" title="微博">
+                                    <i class="fa-brands fa-weibo"></i>
+                                </a>
+                                <a href="#" class="author-profile__social-link" title="bilibili">
+                                    <i class="fa-brands fa-bilibili"></i>
+                                </a>
+                                <a href="#" class="author-profile__social-link" title="小红书">
+                                    <i class="fa-solid fa-book"></i>
+                                </a>
+                                <a href="#" class="author-profile__social-link" title="闲鱼">
+                                    <i class="fa-solid fa-fish-fins"></i>
+                                </a>
+                            </div>
+                            <div class="home-brand-story__social-divider"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <div style="height: 1000px;"></div>
+
+    <nav class="fuguang-bottom-nav">
+        <ul class="bottom-nav-list">
+            <li class="nav-item">
+                <button class="nav-btn">
+                    <i class="fa-solid fa-bars"></i>
+                    <span>菜单</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-btn">
+                    <i class="fa-solid fa-search"></i>
+                    <span>搜索</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-btn">
+                    <div class="icon-wrapper">
+                        <i class="fa-regular fa-heart"></i>
+                        <span class="badge">15</span>
+                    </div>
+                    <span>喜欢</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-btn">
+                    <div class="icon-wrapper">
+                        <i class="fa-regular fa-heart"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <span>收藏</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-btn">
+                    <i class="fa-solid fa-user"></i>
+                    <span>账号</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.querySelector<HTMLElement>('.search-mode-toggle');
+            const thumb = document.querySelector<HTMLElement>('.toggle-thumb');
+            const labels = document.querySelectorAll('.toggle-label');
+            const input = document.querySelector<HTMLInputElement>('.search-input');
+            const dropdown = document.querySelector<HTMLElement>('.search-dropdown');
+            const clearBtn = document.querySelector<HTMLButtonElement>('.search-clear');
+
+            toggle?.addEventListener('click', () => {
+                if (!thumb) return;
+                const isRight = thumb.style.transform === 'translateX(100%)';
+                thumb.style.transform = isRight ? 'translateX(0)' : 'translateX(100%)';
+                labels.forEach((label) => label.classList.toggle('active'));
+            });
+
+            input?.addEventListener('focus', () => {
+                if (dropdown) dropdown.style.display = 'block';
+            });
+
+            input?.addEventListener('input', () => {
+                if (clearBtn && input) {
+                    clearBtn.style.display = input.value ? 'block' : 'none';
+                }
+            });
+
+            clearBtn?.addEventListener('click', () => {
+                if (!input || !clearBtn) return;
+                input.value = '';
+                clearBtn.style.display = 'none';
+                input.focus();
+            });
+
+            document.addEventListener('click', (e) => {
+                const target = e.target;
+                if (!(target instanceof Element)) return;
+                if (!target.closest('.home-search') && dropdown) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
