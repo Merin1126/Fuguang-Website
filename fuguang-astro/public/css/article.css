@@ -42,6 +42,7 @@
     color: #666;
     margin-bottom: 12px;
     display: flex;
+    align-items: center;
     gap: 12px;
 }
 

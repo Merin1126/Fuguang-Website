@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import Navbar from '../components/Navbar.astro';
 import BottomNav from '../components/BottomNav.astro';
 ---
@@ -53,8 +54,8 @@ import BottomNav from '../components/BottomNav.astro';
                                 <button class="clear-btn">清除全部</button>
                             </div>
                             <ul class="dropdown-list">
-                                <li><a href="#"><span lang="ja">です</span>的用法</a></li>
-                                <li><a href="#">N3 文法</a></li>
+                                <li><a href="/search/history/desu"><span lang="ja">です</span>的用法</a></li>
+                                <li><a href="/search/history/n3-grammar">N3 文法</a></li>
                             </ul>
                         </div>
                     </div>
@@ -62,42 +63,42 @@ import BottomNav from '../components/BottomNav.astro';
             </div>
 
             <div class="fuguang-grid-container">
-                <a href="#" class="fuguang-card">
+                <a href="/tags/beginner" class="fuguang-card">
                     <div class="card-icon"><i class="fa-solid fa-seedling"></i></div>
                     <h2>入门</h2>
                 </a>
 
-                <a href="#" class="fuguang-card">
+                <a href="/tags/vocabulary" class="fuguang-card">
                     <div class="card-icon"><i class="fa-solid fa-book-open"></i></div>
                     <h2>单词</h2>
                 </a>
 
-                <a href="#" class="fuguang-card">
+                <a href="/tags/grammar" class="fuguang-card">
                     <div class="card-icon"><i class="fa-solid fa-pen-nib"></i></div>
                     <h2>语法</h2>
                 </a>
 
-                <a href="#" class="fuguang-card">
+                <a href="/tags/test" class="fuguang-card">
                     <div class="card-icon"><i class="fa-solid fa-graduation-cap"></i></div>
                     <h2>测试</h2>
                 </a>
 
-                <a href="#" class="fuguang-card">
+                <a href="/tags/practice" class="fuguang-card">
                     <div class="card-icon"><i class="fa-solid fa-laptop-code"></i></div>
                     <h2>练习</h2>
                 </a>
 
-                <a href="#" class="fuguang-card">
+                <a href="/tags/random" class="fuguang-card">
                     <div class="card-icon"><i class="fa-solid fa-door-open"></i></div>
                     <h2>随机传送</h2>
                 </a>
 
-                <a href="#" class="fuguang-card">
+                <a href="/tags/news" class="fuguang-card">
                     <div class="card-icon"><i class="fa-solid fa-tv"></i></div>
                     <h2>日本新闻</h2>
                 </a>
 
-                <a href="#" class="fuguang-card">
+                <a href="/tags/town-center" class="fuguang-card">
                     <div class="card-icon"><i class="fa-solid fa-chess-rook"></i></div>
                     <h2>城镇中心</h2>
                 </a>
@@ -105,7 +106,7 @@ import BottomNav from '../components/BottomNav.astro';
 
             <div id="brandStoryContainer">
                 <section class="home-brand-story">
-                    <a href="#" class="home-brand-story__logo-link" title="关于扶光"></a>
+                    <a href="/about" class="home-brand-story__logo-link" title="关于扶光" aria-label="关于扶光"></a>
                     <h2 class="home-brand-story__title">欢迎来到扶光日语</h2>
                     <div class="home-brand-story__intro">
                         <div><span class="home-brand-story__founder-info">专为日语自学者设计的极简学习站</span></div>
@@ -120,19 +121,19 @@ import BottomNav from '../components/BottomNav.astro';
                         <div class="home-brand-story__social-section">
                             <div class="home-brand-story__social-divider"></div>
                             <div class="author-profile__social-links">
-                                <a href="#" class="author-profile__social-link" title="微信">
+                                <a href="/social/wechat" class="author-profile__social-link" title="微信">
                                     <i class="fa-brands fa-weixin"></i>
                                 </a>
-                                <a href="#" class="author-profile__social-link" title="微博">
+                                <a href="/social/weibo" class="author-profile__social-link" title="微博">
                                     <i class="fa-brands fa-weibo"></i>
                                 </a>
-                                <a href="#" class="author-profile__social-link" title="bilibili">
+                                <a href="/social/bilibili" class="author-profile__social-link" title="bilibili">
                                     <i class="fa-brands fa-bilibili"></i>
                                 </a>
-                                <a href="#" class="author-profile__social-link" title="小红书">
+                                <a href="/social/xiaohongshu" class="author-profile__social-link" title="小红书">
                                     <i class="fa-solid fa-book"></i>
                                 </a>
-                                <a href="#" class="author-profile__social-link" title="闲鱼">
+                                <a href="/social/xianyu" class="author-profile__social-link" title="闲鱼">
                                     <i class="fa-solid fa-fish-fins"></i>
                                 </a>
                             </div>

@@ -1,17 +1,21 @@
 ---
+import { Image } from 'astro:assets';
+import faviconSrc from '../assets/favicon.svg';
 const { mainHeading = "" } = Astro.props;
 ---
 
 <nav class="fuguang-navbar">
     <div class="nav-left"></div>
     <div class="nav-center">
-        <a href="/" class="circle-logo" title="返回首页"><img src="/favicon.svg" alt="扶光日语 Logo"></a>
-        <div class="navbar-topic-group" id="navbar-topic-group">
-            <a href="/" class="navbar-topic-logo" title="返回首页"><img src="/favicon.svg" alt="扶光日语 Logo"></a>
-            <a class="topic-link" id="navbar-topic-link" href="#top" title="返回文章顶部">
-                <span id="navbar-topic-text">{mainHeading}</span>
-            </a>
-        </div>
+        <a href="/" class="circle-logo" title="返回首页"><Image src={faviconSrc} alt="扶光日语 Logo" width={46} height={46} loading="eager" fetchpriority="high" draggable="false" /></a>
+        {mainHeading && (
+            <div class="navbar-topic-group" id="navbar-topic-group">
+                <a href="/" class="navbar-topic-logo" title="返回首页"><Image src={faviconSrc} alt="扶光日语 Logo" width={24} height={24} loading="eager" draggable="false" /></a>
+                <a class="topic-link" id="navbar-topic-link" href="#top" title="返回文章顶部">
+                    <span id="navbar-topic-text">{mainHeading}</span>
+                </a>
+            </div>
+        )}
     </div>
-    <div class="nav-right"><a href="#" class="login-btn">登录</a></div>
+    <div class="nav-right"><button type="button" class="login-btn">登录</button></div>
 </nav>

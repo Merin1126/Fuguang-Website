@@ -24,7 +24,7 @@ import BottomNav from '../components/BottomNav.astro';
         <div class="breadcrumbs">
             <a href="/">首页</a>
             <span class="separator"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></span>
-            <a href="#">文章</a>
+            <a href="/articles">文章</a>
             <span class="separator"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></span>
             <span>{mainHeading}</span>
         </div>
@@ -62,22 +62,22 @@ import BottomNav from '../components/BottomNav.astro';
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const article = document.querySelector('.fuguang-article');
-            const articleTitleEl = document.querySelector('.article-title');
-            const navbarEl = document.querySelector('.fuguang-navbar');
-            const navbarRight = document.querySelector('.fuguang-navbar .nav-right');
-            const navbarLogo = document.querySelector('.nav-center .circle-logo');
+            const article = document.querySelector<HTMLElement>('.fuguang-article');
+            const articleTitleEl = document.querySelector<HTMLElement>('.article-title');
+            const navbarEl = document.querySelector<HTMLElement>('.fuguang-navbar');
+            const navbarRight = document.querySelector<HTMLElement>('.fuguang-navbar .nav-right');
+            const navbarLogo = document.querySelector<HTMLElement>('.nav-center .circle-logo');
             const navbarTopicGroup = document.getElementById('navbar-topic-group');
-            const navbarTopicLink = document.getElementById('navbar-topic-link');
+            const navbarTopicLink = document.getElementById('navbar-topic-link') as HTMLAnchorElement | null;
             const navbarTopicText = document.getElementById('navbar-topic-text');
-            const toc = document.querySelector('.fuguang-toc');
-            const track = toc?.querySelector('.toc-track');
-            const thumb = document.getElementById('toc-thumb');
-            const info = toc?.querySelector('.toc-info');
-            const progressText = document.getElementById('toc-progress');
-            const titleText = document.getElementById('toc-title');
+            const toc = document.querySelector<HTMLElement>('.fuguang-toc');
+            const track = toc?.querySelector<HTMLElement>('.toc-track') ?? null;
+            const thumb = document.getElementById('toc-thumb') as HTMLElement | null;
+            const info = toc?.querySelector<HTMLElement>('.toc-info') ?? null;
+            const progressText = document.getElementById('toc-progress') as HTMLElement | null;
+            const titleText = document.getElementById('toc-title') as HTMLElement | null;
             const lastReadMarker = document.getElementById('toc-last-read');
-            const backBtn = document.getElementById('toc-back-btn');
+            const backBtn = document.getElementById('toc-back-btn') as HTMLButtonElement | null;
 
             function syncNavbarTopicTypography() {
                 if (!articleTitleEl || !navbarTopicLink) return;
@@ -133,12 +133,17 @@ import BottomNav from '../components/BottomNav.astro';
             if (!article || !toc || !track || !thumb || !info || !progressText || !titleText) return;
             if (getComputedStyle(toc).display === 'none') return;
 
-            const articleContent = article.querySelector('.article-content');
+            const articleContent = article.querySelector<HTMLElement>('.article-content');
             if (!articleContent) return;
-            const headers = Array.from(articleContent.querySelectorAll('h2, h3'));
+            const headers = Array.from(articleContent.querySelectorAll<HTMLElement>('h2, h3'));
             const STORAGE_KEY = `fuguang_last_read_${window.location.pathname}`;
+            const trackEl = track;
+            const thumbEl = thumb;
+            const infoEl = info;
+            const progressTextEl = progressText;
+            const titleTextEl = titleText;
 
-            const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+            const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
 
             function getScrollMetrics() {
                 const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
@@ -147,24 +152,24 @@ import BottomNav from '../components/BottomNav.astro';
             }
 
             function getTrackMetrics() {
-                const trackHeight = track.clientHeight;
-                const thumbHeight = thumb.offsetHeight;
+                const trackHeight = trackEl.clientHeight;
+                const thumbHeight = thumbEl.offsetHeight;
                 const maxThumbTop = Math.max(0, trackHeight - thumbHeight);
                 return { trackHeight, thumbHeight, maxThumbTop };
             }
 
-            function setInfoTopByThumbTop(thumbTop) {
+            function setInfoTopByThumbTop(thumbTop: number) {
                 const { trackHeight } = getTrackMetrics();
-                const infoHeight = info.offsetHeight || 0;
+                const infoHeight = infoEl.offsetHeight || 0;
                 const maxInfoTop = Math.max(0, trackHeight - infoHeight);
                 const infoTop = clamp(thumbTop, 0, maxInfoTop);
-                info.style.top = `${infoTop}px`;
+                infoEl.style.top = `${infoTop}px`;
             }
 
-            function setThumbAndInfoByRatio(ratio) {
+            function setThumbAndInfoByRatio(ratio: number) {
                 const { maxThumbTop } = getTrackMetrics();
                 const thumbTop = clamp(ratio, 0, 1) * maxThumbTop;
-                thumb.style.top = `${thumbTop}px`;
+                thumbEl.style.top = `${thumbTop}px`;
                 setInfoTopByThumbTop(thumbTop);
             }
 
@@ -175,7 +180,7 @@ import BottomNav from '../components/BottomNav.astro';
                 lastReadMarker.style.display = 'none';
             }
 
-            function showLastReadMarker(targetScrollTop) {
+            function showLastReadMarker(targetScrollTop: number) {
                 if (!lastReadMarker) return;
                 const { scrollHeight } = getScrollMetrics();
                 if (scrollHeight <= 0) return;
@@ -214,7 +219,7 @@ import BottomNav from '../components/BottomNav.astro';
 
                 const progressRatio = clamp(scrollTop / scrollHeight, 0, 1);
                 const progressPercent = Math.round(progressRatio * 100);
-                progressText.innerText = `${progressPercent}%`;
+                progressTextEl.innerText = `${progressPercent}%`;
 
                 setThumbAndInfoByRatio(progressRatio);
 
@@ -226,7 +231,7 @@ import BottomNav from '../components/BottomNav.astro';
                         break;
                     }
                 }
-                titleText.innerText = currentSection;
+                titleTextEl.innerText = currentSection;
 
                 const directionDelta = scrollTop - lastScrollTop;
                 if (directionDelta > 2) {
@@ -259,52 +264,53 @@ import BottomNav from '../components/BottomNav.astro';
             let dragOffsetY = 0;
             let currentDragRatio = 0;
 
-            function getClientY(event) {
-                if (event.touches && event.touches.length) return event.touches[0].clientY;
-                if (event.changedTouches && event.changedTouches.length) return event.changedTouches[0].clientY;
-                return event.clientY;
+            function getClientY(event: MouseEvent | TouchEvent): number {
+                if ('touches' in event && event.touches.length) return event.touches[0].clientY;
+                if ('changedTouches' in event && event.changedTouches.length) return event.changedTouches[0].clientY;
+                if ('clientY' in event) return event.clientY;
+                return 0;
             }
 
-            function startDrag(event) {
+            function startDrag(event: MouseEvent | TouchEvent) {
                 event.preventDefault();
-                const thumbRect = thumb.getBoundingClientRect();
+                const thumbRect = thumbEl.getBoundingClientRect();
                 const clientY = getClientY(event);
                 dragOffsetY = clientY - thumbRect.top;
 
                 isDragging = true;
-                thumb.classList.add('is-dragging');
+                thumbEl.classList.add('is-dragging');
             }
 
-            function moveDrag(event) {
+            function moveDrag(event: MouseEvent | TouchEvent) {
                 if (!isDragging) return;
                 event.preventDefault();
 
                 const clientY = getClientY(event);
-                const trackRect = track.getBoundingClientRect();
+                const trackRect = trackEl.getBoundingClientRect();
                 const { maxThumbTop } = getTrackMetrics();
 
                 const thumbTop = clamp(clientY - trackRect.top - dragOffsetY, 0, maxThumbTop);
                 currentDragRatio = maxThumbTop > 0 ? thumbTop / maxThumbTop : 0;
 
-                thumb.style.top = `${thumbTop}px`;
+                thumbEl.style.top = `${thumbTop}px`;
                 setInfoTopByThumbTop(thumbTop);
-                progressText.innerText = `${Math.round(currentDragRatio * 100)}%`;
+                progressTextEl.innerText = `${Math.round(currentDragRatio * 100)}%`;
             }
 
             function endDrag() {
                 if (!isDragging) return;
                 isDragging = false;
-                thumb.classList.remove('is-dragging');
+                thumbEl.classList.remove('is-dragging');
 
                 const { scrollHeight } = getScrollMetrics();
                 const targetTop = clamp(currentDragRatio, 0, 1) * scrollHeight;
                 window.scrollTo({ top: targetTop, behavior: 'smooth' });
             }
 
-            thumb.addEventListener('mousedown', startDrag);
+            thumbEl.addEventListener('mousedown', startDrag);
             window.addEventListener('mousemove', moveDrag);
             window.addEventListener('mouseup', endDrag);
-            thumb.addEventListener('touchstart', startDrag, { passive: false });
+            thumbEl.addEventListener('touchstart', startDrag, { passive: false });
             window.addEventListener('touchmove', moveDrag, { passive: false });
             window.addEventListener('touchend', endDrag);
             window.addEventListener('touchcancel', endDrag);
@@ -313,7 +319,7 @@ import BottomNav from '../components/BottomNav.astro';
             updateScrollspy();
             window.addEventListener('scroll', updateScrollspy, { passive: true });
 
-            let resizeTimer = null;
+            let resizeTimer: ReturnType<typeof setTimeout> | undefined;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(() => {

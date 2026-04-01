@@ -82,6 +82,15 @@
     object-fit: contain;
 }
 
+/* 防止 logo 图片被浏览器拖拽产生“幽灵图像” */
+.fuguang-navbar .circle-logo img,
+.fuguang-navbar .navbar-topic-logo img {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+}
+
 /* 登录按钮 */
 .login-btn {
     background-color: var(--color-accent);
