@@ -1,0 +1,65 @@
+---
+interface Props {
+  title?: string;
+}
+
+const { title = 'Neon Warning Grid' } = Astro.props as Props;
+---
+
+<section class="nwg-callout">
+  <div class="nwg-title">{title}</div>
+  <div class="nwg-content">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .nwg-callout {
+    position: relative;
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 173, 51, 0.42);
+    background:
+      radial-gradient(circle at 18% 50%, rgba(255, 173, 51, 0.13), transparent 54%),
+      linear-gradient(140deg, rgba(65, 48, 21, 0.56), rgba(33, 24, 10, 0.66));
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+  }
+
+  .nwg-callout::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 15px,
+      rgba(255, 173, 51, 0.05) 15px,
+      rgba(255, 173, 51, 0.05) 16px
+    );
+  }
+
+  .nwg-title {
+    position: relative;
+    margin-bottom: 8px;
+    color: #ffd18f;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .nwg-content {
+    position: relative;
+    color: #ffdfa9;
+    line-height: 1.8;
+  }
+
+  .nwg-callout:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 187, 85, 0.65);
+    box-shadow: 0 0 0 1px rgba(255, 179, 68, 0.2), 0 18px 40px rgba(0, 0, 0, 0.38);
+  }
+</style>

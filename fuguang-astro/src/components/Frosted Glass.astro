@@ -1,0 +1,59 @@
+---
+interface Props {
+  title?: string;
+}
+
+const { title = 'Frosted Glass' } = Astro.props as Props;
+---
+
+<section class="fg-callout">
+  <div class="fg-title">{title}</div>
+  <div class="fg-content">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .fg-callout {
+    position: relative;
+    overflow: hidden;
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(202, 220, 255, 0.28);
+    background: linear-gradient(145deg, rgba(164, 193, 255, 0.13), rgba(53, 68, 95, 0.24));
+    backdrop-filter: blur(14px) saturate(120%);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+    transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+  }
+
+  .fg-callout::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(130deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.02) 38%, rgba(255, 255, 255, 0.06));
+  }
+
+  .fg-title {
+    position: relative;
+    margin-bottom: 8px;
+    color: #e3edff;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .fg-content {
+    position: relative;
+    color: #e6efff;
+    line-height: 1.8;
+  }
+
+  .fg-callout:hover {
+    transform: translateY(-2px);
+    border-color: rgba(220, 233, 255, 0.42);
+    box-shadow: 0 0 0 1px rgba(222, 235, 255, 0.16), 0 18px 42px rgba(0, 0, 0, 0.36);
+  }
+</style>

@@ -1,0 +1,52 @@
+---
+interface Props {
+  title?: string;
+}
+
+const { title = 'The Badge Floating' } = Astro.props as Props;
+---
+
+<section class="tbf-callout">
+  <div class="tbf-header">{title}</div>
+  <div class="tbf-content">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .tbf-callout {
+    position: relative;
+    margin: 22px 0;
+    padding: 18px 18px 14px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(36, 42, 62, 0.58), rgba(21, 24, 38, 0.7));
+    border: 1px solid rgba(165, 178, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .tbf-header {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #e0e7ff;
+    border: 1px solid rgba(180, 197, 255, 0.42);
+    background: linear-gradient(120deg, rgba(147, 164, 255, 0.18), rgba(113, 126, 208, 0.16));
+    box-shadow: 0 0 0 1px rgba(201, 214, 255, 0.08), 0 0 14px rgba(147, 169, 255, 0.24);
+  }
+
+  .tbf-content {
+    color: #d9deed;
+    line-height: 1.8;
+  }
+
+  .tbf-callout:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px rgba(182, 194, 255, 0.18), 0 16px 36px rgba(0, 0, 0, 0.4);
+  }
+</style>

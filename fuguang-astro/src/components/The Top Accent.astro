@@ -1,0 +1,57 @@
+---
+interface Props {
+  title?: string;
+}
+
+const { title = 'The Top Accent' } = Astro.props as Props;
+---
+
+<section class="tta-callout">
+  <div class="tta-title">{title}</div>
+  <div class="tta-content">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .tta-callout {
+    position: relative;
+    margin: 22px 0;
+    padding: 16px 18px 14px;
+    border-radius: 12px;
+    background: linear-gradient(160deg, rgba(120, 126, 255, 0.14), rgba(26, 31, 56, 0.22));
+    border: 1px solid rgba(164, 173, 255, 0.24);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.24);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .tta-callout::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 14px;
+    right: 14px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, rgba(183, 190, 255, 0.95), transparent);
+  }
+
+  .tta-title {
+    margin-bottom: 8px;
+    color: #cfd6ff;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .tta-content {
+    color: #d7dcf4;
+    line-height: 1.8;
+  }
+
+  .tta-callout:hover {
+    transform: translateY(-2px);
+    border-color: rgba(193, 201, 255, 0.5);
+    box-shadow: 0 0 0 1px rgba(194, 201, 255, 0.16), 0 14px 36px rgba(0, 0, 0, 0.34);
+  }
+</style>

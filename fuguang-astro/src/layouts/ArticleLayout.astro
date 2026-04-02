@@ -1,7 +1,11 @@
 ---
 // src/layouts/ArticleLayout.astro
 // 这里可以写一点服务器端的 JS，比如接收外面传进来的标题
-const { title, tag, date, mainHeading } = Astro.props;
+const props = Astro.props.frontmatter || Astro.props;
+const { title = '', tag = '', date, mainHeading = '' } = props;
+const displayDate = date
+  ? (date instanceof Date ? date.toISOString().split('T')[0] : String(date).split('T')[0])
+  : '';
 import Navbar from '../components/Navbar.astro';
 import BottomNav from '../components/BottomNav.astro';
 ---
@@ -26,16 +30,16 @@ import BottomNav from '../components/BottomNav.astro';
             <span class="separator"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></span>
             <a href="/articles">文章</a>
             <span class="separator"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></span>
-            <span>{mainHeading}</span>
+            <span>{mainHeading || title}</span>
         </div>
 
         <article class="fuguang-article">
             <header class="article-header">
                 <div class="article-meta">
                     <span class="tag">{tag}</span>
-                    <span class="date">{date}</span>
+                    <span class="date">{displayDate}</span>
                 </div>
-                <h1 class="article-title">{mainHeading}</h1>
+                <h1 class="article-title">{mainHeading || title}</h1>
             </header>
 
             <section class="article-content">

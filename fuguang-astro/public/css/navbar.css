@@ -66,8 +66,32 @@
     /* 去掉 <a> 标签自带的下划线 */
     transition: transform 0.3s ease;
     /* 悬停缩放动画，0.3s 是肉眼感受自然的最短时间 */
-    overflow: hidden;
-    /* 保险裁切，防止图形边缘溢出 */
+    position: relative;
+    overflow: visible;
+    /* 允许两侧光束伪元素显示在圆标外 */
+}
+
+.circle-logo::before,
+.circle-logo::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 200px;
+    height: 2px;
+    pointer-events: none;
+    opacity: 0.75;
+}
+
+.circle-logo::before {
+    right: calc(100% + 20px);
+    transform: translateY(-50%);
+    background: linear-gradient(90deg, transparent, rgba(163, 184, 214, 0.8), transparent);
+}
+
+.circle-logo::after {
+    left: calc(100% + 20px);
+    transform: translateY(-50%);
+    background: linear-gradient(90deg, transparent, rgba(163, 184, 214, 0.8), transparent);
 }
 
 .circle-logo:hover {
@@ -80,6 +104,7 @@
     height: 46px;
     display: block;
     object-fit: contain;
+    border-radius: 50%;
 }
 
 /* 防止 logo 图片被浏览器拖拽产生“幽灵图像” */

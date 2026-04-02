@@ -1,0 +1,69 @@
+---
+layout: ../layouts/ArticleLayout.astro
+title: 关于站长 2.0
+tag: 站长日记
+date: 2026-04-02
+mainHeading: 见证 Markdown 渲染的奇迹
+---
+import TTA from '../components/The Top Accent.astro'
+import TGE from '../components/The Glowing Edge.astro'
+import TBF from '../components/The Badge Floating.astro'
+import MW from '../components/Minimal Wireframe.astro'
+import FG from '../components/Frosted Glass.astro'
+import NWG from '../components/Neon Warning Grid.astro'
+import KeywordChip from '../components/KeywordChip.astro'
+
+## 1. 告别繁琐的 HTML 标签
+---
+你好，这是 Fuguang！你现在看到的这个页面，**完全是由纯文本渲染出来的**。
+
+我再也不用手动去写那些繁琐的 `<p>` 和 `<h2>` 标签了。只要我在这里打上两个井号，Astro 就会自动把它变成带有完美间距的副标题。
+
+## 2. 依然支持日语规范与混合排版
+
+哪怕是在 Markdown 里，我也能极其自然地穿插 HTML 代码。比如写一句日文：
+<p lang="ja">Markdown（マークダウン）は、文書を記述するための軽量マークアップ言語です。</p>
+
+> “专注于内容，将排版交给框架。”
+> 这就是我们选择现代前端架构的终极奥义。
+
+## 3. 右侧目录也会自动生成
+
+只要使用标准的 Markdown 标题，右侧目录和阅读进度就能正常跟随。
+
+## 4. 五种样式示例文段
+
+<TTA title="The Top Accent / 顶部光束">
+  <p>这是一段示例文段：顶部用一条细线强调视觉焦点，适合放关键提示或章节摘要。</p>
+</TTA>
+
+<TGE title="The Glowing Edge / 微光侧沿">
+  <p>这是一段示例文段：左侧发光边缘可以引导阅读路径，适合放建议与注意事项。</p>
+</TGE>
+
+<TBF title="The Badge Floating / 悬浮徽章">
+  <p>这是一段示例文段：胶囊标题更轻量，适合放小贴士与辅助说明。</p>
+</TBF>
+
+<MW title="Minimal Wireframe / 极简线框">
+  <p>这是一段示例文段：线框感更克制，适合用于规则说明或术语定义。</p>
+</MW>
+
+<FG title="Frosted Glass / 雾面琉璃">
+  <p>这是一段示例文段：毛玻璃质感更现代，适合放品牌宣言与高优先级说明块。</p>
+</FG>
+
+<NWG title="Neon Warning Grid / 科技警示黄">
+  <p>这是一段全新科技风示例：以警示黄为主色，融合网格与扫光，适合风险提示与系统状态播报。</p>
+</NWG>
+
+## 5. Keyword 样式演示
+
+<p>
+  <KeywordChip variant="cyber">Cyber Flux</KeywordChip>
+  <KeywordChip variant="amber">Amber Signal</KeywordChip>
+  <KeywordChip variant="teal">Teal Matrix</KeywordChip>
+  <KeywordChip variant="violet">Violet Pulse</KeywordChip>
+  <KeywordChip variant="rose">Rose Circuit</KeywordChip>
+  <KeywordChip variant="lime">Lime Beacon</KeywordChip>
+</p>

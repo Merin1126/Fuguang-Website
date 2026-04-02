@@ -1,0 +1,64 @@
+---
+type Variant = 'cyber' | 'amber' | 'teal' | 'violet' | 'rose' | 'lime';
+
+interface Props {
+  variant?: Variant;
+}
+
+const { variant = 'cyber' } = Astro.props as Props;
+---
+
+<span class={`kw-chip kw-${variant}`}>
+  <slot />
+</span>
+
+<style>
+  .kw-chip {
+    font-size: 0.9em;
+    display: inline-block;
+    line-height: 1.5;
+    border-radius: 6px;
+    padding: 0 8px;
+    margin: 0 6px 6px 0;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    transform: scale(1);
+    transition: transform 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.22s ease, border-color 0.22s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .kw-chip:hover {
+    transform: scale(1.04);
+    border-color: rgba(255, 255, 255, 0.34);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .kw-cyber {
+    color: #b8ddff;
+    background: linear-gradient(135deg, #0f2e46 0%, #173c55 100%);
+  }
+
+  .kw-amber {
+    color: #ffd9a0;
+    background: linear-gradient(135deg, #4a2f12 0%, #5b3817 100%);
+  }
+
+  .kw-teal {
+    color: #b8f5ea;
+    background: linear-gradient(135deg, #13413f 0%, #1a5350 100%);
+  }
+
+  .kw-violet {
+    color: #e6c8ff;
+    background: linear-gradient(135deg, #3e255f 0%, #4f2d74 100%);
+  }
+
+  .kw-rose {
+    color: #ffd0df;
+    background: linear-gradient(135deg, #57283c 0%, #6b3049 100%);
+  }
+
+  .kw-lime {
+    color: #e5ffb6;
+    background: linear-gradient(135deg, #365020 0%, #456829 100%);
+  }
+</style>
