@@ -1,0 +1,44 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+// 导入所有被 remark-directive 映射的高级组件
+import CalloutAccent from '../../components/The Top Accent.astro';
+import CalloutGlow from '../../components/The Glowing Edge.astro';
+import CalloutBadge from '../../components/The Badge Floating.astro';
+import CalloutWire from '../../components/Minimal Wireframe.astro';
+import CalloutGlass from '../../components/Frosted Glass.astro';
+import CalloutNeon from '../../components/Neon Warning Grid.astro';
+import KeywordChip from '../../components/KeywordChip.astro';
+
+export async function getStaticPaths() {
+    const blogEntries = await getCollection('blog');
+    return blogEntries.map((entry) => ({
+        params: { slug: entry.id.replace(/\.mdx?$/, '') },
+        props: { entry },
+    }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+// 将 AST 生成的虚拟标签映射到实际的 Astro 组件
+const mdxComponents = {
+    'directive-accent': CalloutAccent,
+    'directive-glow': CalloutGlow,
+    'directive-badge': CalloutBadge,
+    'directive-wire': CalloutWire,
+    'directive-glass': CalloutGlass,
+    'directive-neon': CalloutNeon,
+    'directive-kw': KeywordChip,
+};
+---
+
+<ArticleLayout
+    title={entry.data.title}
+    tag={entry.data.tag}
+    date={entry.data.date}
+    mainHeading={entry.data.mainHeading}
+>
+    <Content components={mdxComponents} />
+</ArticleLayout>
