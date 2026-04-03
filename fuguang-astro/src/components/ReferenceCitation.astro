@@ -1,0 +1,290 @@
+---
+// src/components/ReferenceCitation.astro
+const { id, source, url } = Astro.props;
+
+// 1. 将 1-10 的数字自动转换为带有圆圈的字符（①-⑩）
+const circledNumbers = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩'];
+const normalizedId = Number.parseInt(String(id ?? ''), 10);
+const hasValidId = Number.isFinite(normalizedId) && normalizedId > 0;
+const displayId = hasValidId
+    ? (normalizedId <= 10 ? circledNumbers[normalizedId - 1] : `(${normalizedId})`)
+    : '(?)';
+const refDomId = hasValidId ? normalizedId : 'unknown';
+---
+
+<span class="ref-citation-group">
+    {/* 2. 正文右上角的小圆圈 ① */}
+    <sup class="ref-superscript" id={`ref-link-${refDomId}`}>
+        {displayId}
+    </sup>
+    
+    {/* 3. 左侧空白区域的长方形卡片 */}
+    <span class="ref-margin-card">
+        {/* 卡片上的引用编号 ① */}
+        <span class="card-id">{displayId}</span>
+        
+        {/* 参考文献来源文字 */}
+        <span class="card-source">
+            {source}
+            {url && <a href={url} target="_blank" rel="noopener noreferrer" class="card-url">🔗</a>}
+        </span>
+        <span class="ref-connector" aria-hidden="true">
+            <span class="ref-connector__h1"></span>
+            <span class="ref-connector__v"></span>
+            <span class="ref-connector__h2"></span>
+        </span>
+    </span>
+</span>
+
+<style>
+    .ref-citation-group {
+        position: relative; /* 核心：让子元素相对于自己定位 */
+    }
+
+    /* 正文右上角小圆圈 ① 样式 */
+    .ref-superscript {
+        font-size: 0.8em;
+        color: var(--color-primary); /* 使用你的雾霾蓝品牌色 */
+        cursor: pointer;
+        font-family: var(--font-ja); /* 优先使用日语字体确保字符完美 */
+        opacity: 0.9;
+        transition: opacity 0.2s;
+    }
+
+    .ref-superscript:hover {
+        opacity: 1;
+        font-weight: bold;
+    }
+
+    /* 左侧参考文献卡片 样式 */
+    .ref-margin-card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform: translate(var(--ref-shift-x, -280px), var(--ref-shift-y, 0px));
+        width: 240px; /* 卡片宽度 */
+        background: rgba(163, 184, 214, 0.05); /* 极其微弱的品牌色底色 */
+        border: 1px solid rgba(163, 184, 214, 0.15); /* 细致的品牌色边框 */
+        padding: 16px;
+        border-radius: 8px; /* 贴合你的极简圆角风格 */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: start;
+        column-gap: 12px;
+        line-height: 1.6;
+        text-align: left;
+        will-change: transform;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+    }
+
+    /* 虚线连接魔法 ✨ */
+    .ref-connector {
+        position: absolute;
+        right: -44px;
+        top: 0;
+        width: 44px;
+        height: 100%;
+        pointer-events: none; /* 虚线不影响点击 */
+        --line-color: rgba(163, 184, 214, 0.4);
+        --line-mid-x: 14px;
+        --line-end-x: 44px;
+    }
+
+    .ref-connector__h1,
+    .ref-connector__v,
+    .ref-connector__h2 {
+        position: absolute;
+        display: block;
+        pointer-events: none;
+        transition: border-color 0.25s ease;
+    }
+
+    .ref-connector__h1 {
+        left: 0;
+        top: var(--ref-center-y, 50%);
+        width: var(--line-mid-x);
+        height: 0;
+        border-top: 1px dashed var(--line-color);
+    }
+
+    .ref-connector__v {
+        left: var(--line-mid-x);
+        top: var(--ref-bend-top, 50%);
+        height: var(--ref-bend-height, 0px);
+        width: 0;
+        border-left: 1px dashed var(--line-color);
+    }
+
+    .ref-connector__h2 {
+        left: var(--line-mid-x);
+        top: var(--ref-line-y, 50%);
+        width: calc(var(--line-end-x) - var(--line-mid-x));
+        height: 0;
+        border-top: 1px dashed var(--line-color);
+    }
+
+    .ref-superscript:hover + .ref-margin-card,
+    .ref-citation-group.is-active .ref-margin-card {
+        background: rgba(163, 184, 214, 0.12);
+        border-color: rgba(163, 184, 214, 0.45);
+        box-shadow: 0 0 0 1px rgba(163, 184, 214, 0.25), 0 0 18px rgba(163, 184, 214, 0.28);
+    }
+
+    .ref-superscript:hover + .ref-margin-card .ref-connector,
+    .ref-citation-group.is-active .ref-margin-card .ref-connector {
+        --line-color: rgba(163, 184, 214, 0.75);
+    }
+
+    .card-id {
+        font-weight: bold;
+        color: var(--color-primary);
+        font-size: 1.1em;
+        line-height: 1.2;
+        width: 1.3em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1px;
+    }
+
+    .card-source {
+        color: var(--text-body);
+        font-size: 0.9em;
+        line-height: 1.6;
+        word-break: break-word;
+    }
+
+    .card-url {
+        margin-left: 4px;
+        opacity: 0.7;
+        text-decoration: none;
+        color: var(--color-primary);
+    }
+    .card-url:hover {
+        opacity: 1;
+        text-decoration: underline;
+    }
+
+    /* 移动端适配：屏幕太小时，将卡片隐藏，或改为悬浮显示 */
+    @media (max-width: 1024px) {
+        .ref-margin-card {
+            display: none; /* 暂时隐藏，你可以根据需要设计 tooltip 效果 */
+        }
+    }
+</style>
+
+<script>
+    const w = window as Window & { __fuguangRefCitationInited?: boolean };
+    if (!w.__fuguangRefCitationInited) {
+        w.__fuguangRefCitationInited = true;
+
+        const TOC_OFFSET = 390; // 与右侧目录的偏移量保持同一基准
+        const GUTTER_GAP = 24; // 卡片与正文左缘的间距
+        const MIN_LEFT = 12; // 避免超小窗口时贴边
+        const MIN_CARD_GAP = 14; // 卡片之间最小垂直间距，防止重叠
+
+        const alignReferenceCards = () => {
+            const groups = document.querySelectorAll('.ref-citation-group');
+            const layoutItems: Array<{
+                cardEl: HTMLElement;
+                supRect: DOMRect;
+                cardHeight: number;
+                desiredTop: number;
+                naturalTop: number;
+            }> = [];
+
+            groups.forEach((group) => {
+                const sup = group.querySelector('.ref-superscript');
+                const card = group.querySelector('.ref-margin-card');
+                if (!sup || !card) return;
+                const cardEl = card as HTMLElement;
+                const supEl = sup as HTMLElement;
+
+                // 先重置纵向位移，再测量真实几何信息
+                cardEl.style.setProperty('--ref-shift-y', '0px');
+
+                const cardWidth = cardEl.getBoundingClientRect().width || 240;
+                const desiredLeft = Math.max(
+                    MIN_LEFT,
+                    window.innerWidth / 2 - TOC_OFFSET - GUTTER_GAP - cardWidth
+                );
+                const supRect = supEl.getBoundingClientRect();
+                const supLeft = supRect.left;
+                const shiftX = desiredLeft - supLeft;
+
+                cardEl.style.setProperty('--ref-shift-x', `${Math.round(shiftX)}px`);
+                const cardRect = cardEl.getBoundingClientRect();
+                const supCenterY = supRect.top + supRect.height / 2;
+                const desiredTop = supCenterY - cardRect.height / 2;
+
+                layoutItems.push({
+                    cardEl,
+                    supRect,
+                    cardHeight: cardRect.height,
+                    desiredTop,
+                    naturalTop: cardRect.top,
+                });
+            });
+
+            layoutItems.sort((a, b) => a.desiredTop - b.desiredTop);
+            let nextAvailableTop = Number.NEGATIVE_INFINITY;
+            layoutItems.forEach((item) => {
+                const placedTop = Math.max(item.desiredTop, nextAvailableTop);
+                nextAvailableTop = placedTop + item.cardHeight + MIN_CARD_GAP;
+                const shiftY = placedTop - item.naturalTop;
+                item.cardEl.style.setProperty('--ref-shift-y', `${Math.round(shiftY)}px`);
+            });
+
+            layoutItems.forEach((item) => {
+                const finalCardTop = item.naturalTop + Number.parseFloat(item.cardEl.style.getPropertyValue('--ref-shift-y'));
+                const supCenterY = item.supRect.top + item.supRect.height / 2;
+                const rawLineY = supCenterY - finalCardTop;
+                const clampedLineY = Math.max(8, Math.min(item.cardHeight - 8, rawLineY));
+                const centerY = item.cardHeight / 2;
+                const bendTop = Math.min(centerY, clampedLineY);
+                const bendHeight = Math.abs(centerY - clampedLineY);
+
+                item.cardEl.style.setProperty('--ref-line-y', `${Math.round(clampedLineY)}px`);
+                item.cardEl.style.setProperty('--ref-center-y', `${Math.round(centerY)}px`);
+                item.cardEl.style.setProperty('--ref-bend-top', `${Math.round(bendTop)}px`);
+                item.cardEl.style.setProperty('--ref-bend-height', `${Math.round(bendHeight)}px`);
+            });
+        };
+
+        const bindReferenceInteractions = () => {
+            const groups = document.querySelectorAll('.ref-citation-group');
+            groups.forEach((group) => {
+                const groupEl = group as HTMLElement;
+                if (groupEl.dataset.refBound === '1') return;
+
+                const sup = groupEl.querySelector('.ref-superscript');
+                if (!sup) return;
+                const supEl = sup as HTMLElement;
+
+                supEl.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    document.querySelectorAll('.ref-citation-group.is-active').forEach((activeGroup) => {
+                        if (activeGroup !== groupEl) activeGroup.classList.remove('is-active');
+                    });
+                    groupEl.classList.add('is-active');
+                    window.setTimeout(() => {
+                        groupEl.classList.remove('is-active');
+                    }, 1800);
+                });
+
+                groupEl.dataset.refBound = '1';
+            });
+        };
+
+        window.addEventListener('resize', alignReferenceCards, { passive: true });
+        window.addEventListener('load', alignReferenceCards);
+        document.addEventListener('DOMContentLoaded', () => {
+            bindReferenceInteractions();
+            alignReferenceCards();
+        });
+        bindReferenceInteractions();
+        alignReferenceCards();
+    }
+</script>
