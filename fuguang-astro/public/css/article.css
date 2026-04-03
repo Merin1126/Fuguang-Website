@@ -32,8 +32,8 @@
 
 /* 头部信息区 */
 .article-header {
-    padding-bottom: 24px;
-    margin-bottom: 32px;
+    padding-bottom: 0px;
+    margin-bottom: 16px;
 }
 
 .article-meta {
@@ -399,4 +399,14 @@ rt {
     opacity: 0;
     pointer-events: none;
     transform: scale(0.85);
+}
+
+/* 图片响应式适配与极简美化 */
+.article-content img {
+    max-width: 100%; /* 核心魔法：图片最宽只能和外面的父容器（文章底座）一样宽 */
+    height: auto; /* 高度自动按比例缩放，防止图片被拉伸变形 */
+    display: block; /* 将图片变为块级元素，去掉底部神秘的空白间隙 */
+    margin: 32px auto; /* 让图片在正文中自动水平居中，并和上下文字拉开 32px 的呼吸感 */
+    border-radius: 12px; /* 契合你全站的 Bento UI 圆角风格 */
+    box-shadow: var(--shadow-base); /* 加上一点微弱的浮雕阴影，显得更精致 */
 }
