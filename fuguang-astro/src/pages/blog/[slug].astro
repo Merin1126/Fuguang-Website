@@ -11,6 +11,7 @@ import CalloutGlass from '../../components/Frosted Glass.astro';
 import CalloutNeon from '../../components/Neon Warning Grid.astro';
 import KeywordChip from '../../components/KeywordChip.astro';
 import ReferenceCitation from '../../components/ReferenceCitation.astro';
+import ProfileCard from '../../components/ProfileCard.astro';
 
 export async function getStaticPaths() {
     const blogEntries = await getCollection('blog');
@@ -33,6 +34,7 @@ const mdxComponents = {
     'directive-neon': CalloutNeon,
     'directive-kw': KeywordChip,
     'directive-ref': ReferenceCitation, // 注入参考文献指令
+    'directive-profile': ProfileCard,
 };
 ---
 

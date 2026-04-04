@@ -1,0 +1,103 @@
+---
+// src/components/ProfileCard.astro
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+const { avatar } = Astro.props;
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+    '/src/assets/**/*.{jpeg,jpg,png,gif,webp,svg}'
+);
+
+const imagePath = avatar ? `/src/assets/${avatar}` : null;
+const load = imagePath ? images[imagePath] : undefined;
+const imageMod = load ? await load() : null;
+const imageSrc = imageMod?.default ?? null;
+
+if (avatar && !load) {
+    console.warn(`[ProfileCard] 找不到图片: ${imagePath}`);
+}
+
+const isSvg = typeof avatar === 'string' && avatar.toLowerCase().endsWith('.svg');
+---
+
+<div class="fuguang-profile-card">
+    {
+        imageSrc && !isSvg && (
+            <div class="profile-avatar">
+                <Image src={imageSrc} alt="Avatar" width={180} />
+            </div>
+        )
+    }
+    {
+        imageSrc && isSvg && (
+            <div class="profile-avatar">
+                <img src={imageSrc.src} width="180" alt="Avatar" loading="lazy" decoding="async" />
+            </div>
+        )
+    }
+
+    <div class="profile-content">
+        <slot />
+    </div>
+</div>
+
+<style>
+    .fuguang-profile-card {
+        display: flex;
+        gap: 32px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-light);
+        padding: 32px;
+        border-radius: 16px;
+        margin: 40px 0;
+        align-items: flex-start;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .fuguang-profile-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(163, 184, 214, 0.3);
+    }
+
+    .profile-avatar {
+        flex-shrink: 0;
+    }
+
+    .profile-avatar img {
+        width: 160px;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: var(--shadow-base);
+        object-fit: cover;
+    }
+
+    .profile-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .profile-content :global(h2),
+    .profile-content :global(h3) {
+        margin-top: 0 !important;
+        margin-bottom: 16px !important;
+        color: var(--text-title);
+    }
+
+    .profile-content :global(p:last-child) {
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 640px) {
+        .fuguang-profile-card {
+            flex-direction: column;
+            align-items: center;
+            text-align: left;
+            padding: 24px;
+            gap: 20px;
+        }
+        .profile-avatar img {
+            width: 120px;
+        }
+    }
+</style>

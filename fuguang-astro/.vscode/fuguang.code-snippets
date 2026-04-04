@@ -59,5 +59,16 @@
       ":kw[$2]{variant=\"${1|cyber,amber,teal,violet,rose,lime|}\"}"
     ],
     "description": "Insert inline keyword directive mapped to KeywordChip"
+  },
+  "Profile 档案卡片": {
+    "prefix": "pro",
+    "body": [
+      ":::profile{avatar=\"${1:logo.png}\"}",
+      "### $2",
+      "",
+      "$3",
+      ":::"
+    ],
+    "description": "插入带头像的左右排版档案卡片"
   }
 }
