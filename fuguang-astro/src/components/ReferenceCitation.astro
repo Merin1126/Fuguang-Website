@@ -1,6 +1,6 @@
 ---
 // src/components/ReferenceCitation.astro
-const { id, source, url } = Astro.props;
+const { id, source, url, open } = Astro.props;
 
 // 1. 将 1-10 的数字自动转换为带有圆圈的字符（①-⑩）
 const circledNumbers = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩'];
@@ -10,9 +10,28 @@ const displayId = hasValidId
     ? (normalizedId <= 10 ? circledNumbers[normalizedId - 1] : `(${normalizedId})`)
     : '(?)';
 const refDomId = hasValidId ? normalizedId : 'unknown';
+
+// 你可以在这里集中配置“默认展开”的引用 ID（仅在未显式传 open 时生效）
+const DEFAULT_OPEN_IDS = new Set<number>();
+
+const parseBoolean = (value: unknown): boolean | undefined => {
+    if (typeof value === 'boolean') return value;
+    if (typeof value !== 'string') return undefined;
+    const normalized = value.trim().toLowerCase();
+    if (['true', '1', 'yes', 'on', 'show', 'open'].includes(normalized)) return true;
+    if (['false', '0', 'no', 'off', 'hide', 'closed'].includes(normalized)) return false;
+    return undefined;
+};
+
+const openFromProp = parseBoolean(open);
+const isInitiallyOpen = openFromProp ?? (hasValidId ? DEFAULT_OPEN_IDS.has(normalizedId) : true);
 ---
 
-<span class="ref-citation-group" data-ref-id={String(refDomId)}>
+<span
+    class={`ref-citation-group ${isInitiallyOpen ? '' : 'is-collapsed'}`}
+    data-ref-id={String(refDomId)}
+    data-ref-open={isInitiallyOpen ? 'true' : 'false'}
+>
     {/* 2. 正文右上角的小圆圈 ① */}
     <sup class="ref-superscript" id={`ref-link-${refDomId}`}>
         {displayId}
@@ -42,13 +61,43 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
         color: var(--color-primary); /* 使用你的雾霾蓝品牌色 */
         cursor: pointer;
         font-family: var(--font-ja); /* 优先使用日语字体确保字符完美 */
+        font-style: normal; /* 避免父级斜体传递导致序号错位 */
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.06em;
+        height: 1.06em;
+        position: relative;
         opacity: 0.9;
         transition: opacity 0.2s;
+    }
+
+    .ref-superscript::after {
+        content: '';
+        position: absolute;
+        inset: -0.02em;
+        border-radius: 999px;
+        opacity: 0;
+        transition: opacity 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
 
     .ref-superscript:hover {
         opacity: 1;
         font-weight: bold;
+    }
+
+    .ref-citation-group.is-collapsed .ref-superscript {
+        opacity: 1;
+        color: rgba(185, 207, 236, 0.95);
+        text-shadow: 0 0 6px rgba(163, 184, 214, 0.48), 0 0 12px rgba(163, 184, 214, 0.3);
+        animation: ref-sup-pulse 1.7s ease-in-out infinite;
+    }
+
+    .ref-citation-group.is-collapsed .ref-superscript::after {
+        opacity: 1;
+        border: 1px solid rgba(163, 184, 214, 0.34);
+        box-shadow: 0 0 4px rgba(163, 184, 214, 0.3);
     }
 
     /* 左侧参考文献卡片 样式 */
@@ -72,6 +121,38 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
         text-align: left;
         will-change: transform;
         transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+        overflow: hidden;
+    }
+
+    .ref-margin-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0;
+        background: linear-gradient(
+            90deg,
+            rgba(163, 184, 214, 0.02) 0%,
+            rgba(163, 184, 214, 0.35) 56%,
+            rgba(163, 184, 214, 0.04) 100%
+        );
+    }
+
+    .ref-citation-group.is-collapsed .ref-margin-card {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translate(calc(var(--ref-shift-x, -280px) + 16px), var(--ref-shift-y, 0px));
+    }
+
+    .ref-citation-group.is-opening .ref-margin-card {
+        opacity: 1;
+        visibility: visible;
+        animation: ref-card-pop 0.32s ease-out;
+    }
+
+    .ref-citation-group.is-opening .ref-margin-card::after {
+        animation: ref-card-sweep 0.45s ease-out;
     }
 
     .ref-superscript:hover + .ref-margin-card,
@@ -100,6 +181,15 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
         stroke-linecap: round;
         stroke-linejoin: round;
         transition: stroke 0.25s ease, stroke-width 0.25s ease;
+    }
+
+    :global(.ref-routing-path.is-hidden) {
+        opacity: 0;
+    }
+
+    :global(.ref-routing-path.is-entering) {
+        stroke-dasharray: 8 10;
+        animation: ref-path-draw 0.45s ease-out forwards;
     }
 
     :global(.ref-routing-path.is-active) {
@@ -141,6 +231,49 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
     @media (max-width: 1024px) {
         .ref-margin-card {
             display: none; /* 暂时隐藏，你可以根据需要设计 tooltip 效果 */
+        }
+    }
+
+    @keyframes ref-sup-pulse {
+        0%,
+        100% {
+            text-shadow: 0 0 8px rgba(163, 184, 214, 0.45), 0 0 18px rgba(163, 184, 214, 0.25);
+        }
+        50% {
+            text-shadow: 0 0 10px rgba(163, 184, 214, 0.75), 0 0 26px rgba(163, 184, 214, 0.45);
+        }
+    }
+
+    @keyframes ref-card-pop {
+        from {
+            opacity: 0;
+            transform: translate(calc(var(--ref-shift-x, -280px) + 16px), var(--ref-shift-y, 0px));
+        }
+        to {
+            opacity: 1;
+            transform: translate(var(--ref-shift-x, -280px), var(--ref-shift-y, 0px));
+        }
+    }
+
+    @keyframes ref-card-sweep {
+        0% {
+            opacity: 0.95;
+            transform: translateX(-18%);
+        }
+        100% {
+            opacity: 0;
+            transform: translateX(35%);
+        }
+    }
+
+    @keyframes ref-path-draw {
+        0% {
+            opacity: 0.2;
+            stroke-dashoffset: 120;
+        }
+        100% {
+            opacity: 1;
+            stroke-dashoffset: 0;
         }
     }
 </style>
@@ -245,6 +378,8 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
                 const groupEl = group as HTMLElement;
                 const cardEl = card as HTMLElement;
                 const supEl = sup as HTMLElement;
+                const isCollapsed = groupEl.classList.contains('is-collapsed');
+                if (isCollapsed) return;
 
                 // 先重置纵向位移，再测量真实几何信息
                 cardEl.style.setProperty('--ref-shift-y', '0px');
@@ -309,6 +444,12 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
                 if (item.groupEl.classList.contains('is-active')) {
                     path.classList.add('is-active');
                 }
+                if (item.groupEl.classList.contains('is-collapsed')) {
+                    path.classList.add('is-hidden');
+                }
+                if (item.groupEl.classList.contains('is-opening')) {
+                    path.classList.add('is-entering');
+                }
                 path.setAttribute('d', d);
                 overlay.appendChild(path);
             });
@@ -324,13 +465,40 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
                 if (!sup) return;
                 const supEl = sup as HTMLElement;
 
+                const setCollapsedState = (collapsed: boolean) => {
+                    if (collapsed) {
+                        groupEl.classList.add('is-collapsed');
+                        groupEl.classList.remove('is-opening', 'is-active');
+                        groupEl.dataset.refOpen = 'false';
+                    } else {
+                        groupEl.classList.remove('is-collapsed');
+                        groupEl.dataset.refOpen = 'true';
+                    }
+                    alignReferenceCards();
+                };
+
                 supEl.addEventListener('click', (event) => {
                     event.preventDefault();
+                    const isCollapsed = groupEl.classList.contains('is-collapsed');
+
+                    // 已展开 -> 点击后折叠
+                    if (!isCollapsed) {
+                        setCollapsedState(true);
+                        return;
+                    }
+
+                    // 已折叠 -> 点击后展开并播放动画
+                    setCollapsedState(false);
+                    groupEl.classList.add('is-opening');
                     document.querySelectorAll('.ref-citation-group.is-active').forEach((activeGroup) => {
                         if (activeGroup !== groupEl) activeGroup.classList.remove('is-active');
                     });
                     groupEl.classList.add('is-active');
                     alignReferenceCards();
+                    window.setTimeout(() => {
+                        groupEl.classList.remove('is-opening');
+                        alignReferenceCards();
+                    }, 520);
                     window.setTimeout(() => {
                         groupEl.classList.remove('is-active');
                         alignReferenceCards();

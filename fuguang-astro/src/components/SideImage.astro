@@ -7,9 +7,10 @@ interface Props {
     pos?: 'left' | 'right' | string;
     width?: number | string;
     alt?: string;
+    offset?: number | string;
 }
 
-const { src, pos = 'left', width = 300, alt = '' } = Astro.props as Props;
+const { src, pos = 'left', width = 300, alt = '', offset = 0 } = Astro.props as Props;
 
 const images = import.meta.glob<{ default: ImageMetadata }>(
     '/src/assets/**/*.{jpeg,jpg,png,gif,webp,svg}'
@@ -28,19 +29,27 @@ const isRight = String(pos).toLowerCase() === 'right';
 const isSvg = typeof src === 'string' && src.toLowerCase().endsWith('.svg');
 const parsedWidth = Number.parseInt(String(width), 10);
 const safeWidth = Number.isFinite(parsedWidth) && parsedWidth > 0 ? parsedWidth : 300;
+const parsedOffset = Number.parseFloat(String(offset));
+const safeOffset = Number.isFinite(parsedOffset) ? parsedOffset : 0;
 ---
 
 <div class={`fuguang-side-image ${isRight ? 'align-right' : 'align-left'}`}>
     {
         imageSrc && !isSvg && (
-            <div class="side-image-wrapper" style={`--side-image-width:${safeWidth}px;`}>
+            <div
+                class="side-image-wrapper"
+                style={`--side-image-width:${safeWidth}px;--side-image-manual-offset:${safeOffset}px;`}
+            >
                 <Image src={imageSrc} alt={alt || 'Side image'} width={safeWidth} />
             </div>
         )
     }
     {
         imageSrc && isSvg && (
-            <div class="side-image-wrapper" style={`--side-image-width:${safeWidth}px;`}>
+            <div
+                class="side-image-wrapper"
+                style={`--side-image-width:${safeWidth}px;--side-image-manual-offset:${safeOffset}px;`}
+            >
                 <img
                     src={imageSrc.src}
                     alt={alt || 'Side image'}
@@ -78,7 +87,9 @@ const safeWidth = Number.isFinite(parsedWidth) && parsedWidth > 0 ? parsedWidth 
         width: var(--side-image-width, 300px);
         align-self: flex-start;
         margin-top: 0 !important;
-        transform: translateY(var(--side-image-shift-y, 0px));
+        transform: translateY(
+            calc(var(--side-image-shift-y, 0px) + var(--side-image-manual-offset, 0px))
+        );
     }
 
     .side-image-wrapper :global(picture) {
@@ -94,6 +105,7 @@ const safeWidth = Number.isFinite(parsedWidth) && parsedWidth > 0 ? parsedWidth 
         border-radius: 12px;
         box-shadow: var(--shadow-base);
         display: block;
+        
     }
 
     .side-text-content {
@@ -101,6 +113,7 @@ const safeWidth = Number.isFinite(parsedWidth) && parsedWidth > 0 ? parsedWidth 
         min-width: 0;
         align-self: flex-start;
         margin-top: 0 !important;
+        line-height: 1.8;
     }
 
     .side-text-content > :global(:first-child) {
@@ -141,6 +154,10 @@ const safeWidth = Number.isFinite(parsedWidth) && parsedWidth > 0 ? parsedWidth 
                 const firstTextEl = text.firstElementChild as HTMLElement | null;
                 const imgEl = wrapper.querySelector('img, picture') as HTMLElement | null;
                 if (!firstTextEl || !imgEl) return;
+
+                // 有些 MDX 节点（尤其标题）会带默认 margin-top，导致文字视觉下沉。
+                // 运行时兜底清零，确保文字首行与图片顶端可对齐。
+                firstTextEl.style.setProperty('margin-top', '0px');
 
                 if (window.matchMedia('(max-width: 768px)').matches) {
                     wrapper.style.setProperty('--side-image-shift-y', '0px');
