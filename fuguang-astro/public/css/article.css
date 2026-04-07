@@ -62,18 +62,20 @@
 /* 正文排版 (极其重要：控制行高与段落间距) */
 .article-content p {
     font-size: 16px;
-    line-height: 1.8;
+    line-height: 2.1;
     /* 黄金阅读行高 */
     margin-bottom: 18px;
     letter-spacing: 0.5px;
     /* 字间距微调 */
+    text-align: justify;
+    /* 两端对齐，消除右侧参差不齐的锯齿边 */
 }
 
 /* Markdown 正文基础排版（从 global.css 归并到文章专用样式） */
 .article-content hr {
     border: none;
     border-top: 1px solid var(--hr-color);
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .article-content h2 {
@@ -459,9 +461,18 @@ rt {
     position: relative;
 }
 
+/* 标题行内的 :kw — 相对 h3 单独缩小；空隙用 margin，勿依赖空格（HTML 会折叠） */
+.article-content h3.fuguang-name-title .kw-chip {
+    font-size: 0.55em;
+    margin-left: 0.55em;
+    margin-bottom: 0;
+    vertical-align: 0.08em;
+}
+
 /* MDX <strong> 加粗文字特效 */
 .article-content strong {
     font-weight: 700; /* 确保字重足够 */
+    font-size: 18px;
     color: var(--color-primary); /* 文字本身变成品牌色 */
     /* 核心魔法：底部的半透明荧光笔下划线特效 */
     background: linear-gradient(to top, rgba(163, 184, 214, 0.3) 30%, transparent 30%);
@@ -473,10 +484,18 @@ rt {
 .fuguang-signature {
     display: block; /* 独占一行 */
     margin-top: 3px;
-    font-size: 16px;
+    font-size: 13px;
     color: var(--text-muted); /* 定义在 global.css :root */
     font-family: var(--font-ja); /* 与 global.css [lang="ja"] 同源 */
     font-style: italic; /* 斜体增加文学感 */
     letter-spacing: 0.05em; /* 稍微拉开字距，显得更精致 */
     text-align: left; /* 署名通常靠右排版更优雅，如果想居左改成 left */
+}
+
+/* 覆盖 .article-content p，使 MDX 生成的内层 <p> 真正套用署名字号与间距 */
+.article-content .fuguang-signature,
+.article-content .fuguang-signature p {
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 0;
 }

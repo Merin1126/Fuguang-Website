@@ -22,3 +22,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Markdown 正文/博客源码：不纳入 Git（仅留在本机工作区）。
+# 说明：被 ignore 的文件不会出现在任何 commit 里，也无法「只提交到本地、不 push」。
+# 若希望 README 也不上传，请删除下面一行 !README.md
+*.md
+*.mdx
+!README.md
