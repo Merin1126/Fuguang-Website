@@ -69,6 +69,41 @@
     /* 字间距微调 */
 }
 
+/* Markdown 正文基础排版（从 global.css 归并到文章专用样式） */
+.article-content hr {
+    border: none;
+    border-top: 1px solid var(--hr-color);
+    margin-bottom: 10px;
+}
+
+.article-content h2 {
+    font-size: 20px;
+    color: var(--text-title);
+    margin-top: 30px;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.article-content h3 {
+    font-size: 18px;
+    color: var(--text-title);
+    margin-top: 30px;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.article-content ul,
+.article-content ol {
+    margin-bottom: 24px;
+    padding-left: 20px;
+    color: var(--text-body);
+    line-height: 1.8;
+}
+
+.article-content li {
+    margin-bottom: 8px;
+}
+
 /* 引用块 (Blockquote) 样式 */
 .article-content blockquote {
     position: relative;
@@ -411,9 +446,9 @@ rt {
     box-shadow: var(--shadow-base); /* 加上一点微弱的浮雕阴影，显得更精致 */
 }
 
-/* MDX <h3> 三级标题美化 */
-.article-content h3 {
-    font-size: 1.15em;
+/* 文章内可复用：提示名称标题（按需给 h3 添加类名） */
+.article-content h3.fuguang-name-title {
+    font-size: 1.5em;
     color: var(--text-title); /* 保持标题颜色 */
     font-weight: 700;
     margin-top: 40px; /* 距离上方远一点，拉开呼吸感 */

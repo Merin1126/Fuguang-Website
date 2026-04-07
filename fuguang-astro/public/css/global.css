@@ -80,43 +80,4 @@ body {
     font-family: var(--font-ja);
 }
 
-/* =========================================
-   Markdown 自动渲染排版补充 (Markdown Typography)
-========================================= */
-
-/* 1. 修复分割线 (hr) 的样式与间距 */
-.article-content hr {
-    border: none; /* 去掉默认的丑陋边框 */
-    border-top: 1px solid var(--hr-color); /* 使用可配置 hr 变量颜色 */
-    margin-bottom: 10px;
-}
-
-/* 2. 顺手修复 H2/H3 标题的上下间距 (因为全局 reset 把它们的间距也清零了) */
-.article-content h2 {
-    font-size: 18px;
-    color: var(--text-title);
-    margin-top: 30px; /* 标题上方留白多一点，和上一段拉开距离 */
-    margin-bottom: 5px; /* 标题下方留白少一点，紧贴自己的内容 */
-    font-weight: 700;
-}
-
-.article-content h3 {
-    font-size: 15px;
-    color: var(--text-title);
-    margin-top: 30px;
-    margin-bottom: 5px;
-    font-weight: 700;
-}
-
-/* 3. 修复 Markdown 列表 (ul/li) 的间距 */
-.article-content ul, 
-.article-content ol {
-    margin-bottom: 24px;
-    padding-left: 20px; /* 让列表缩进一点 */
-    color: var(--text-body);
-    line-height: 1.8;
-}
-
-.article-content li {
-    margin-bottom: 8px; /* 列表项之间的微小间距 */
-}
+/* 文章正文排版规则已统一归档到 /css/article.css */
