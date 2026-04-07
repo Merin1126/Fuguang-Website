@@ -1,0 +1,19 @@
+---
+const { mt = '16px', mb = '16px', opacity = '0.3' } = Astro.props;
+---
+
+<div
+    class="fuguang-dash-divider"
+    style={`--dash-mt:${mt};--dash-mb:${mb};--dash-opacity:${opacity};`}
+    aria-hidden="true"
+></div>
+
+<style>
+    .fuguang-dash-divider {
+        display: block;
+        width: 100%;
+        margin-top: var(--dash-mt);
+        margin-bottom: var(--dash-mb);
+        border-top: 1px dashed rgba(163, 184, 214, var(--dash-opacity));
+    }
+</style>

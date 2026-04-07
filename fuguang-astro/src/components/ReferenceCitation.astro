@@ -12,14 +12,14 @@ const displayId = hasValidId
 const refDomId = hasValidId ? normalizedId : 'unknown';
 ---
 
-<span class="ref-citation-group">
+<span class="ref-citation-group" data-ref-id={String(refDomId)}>
     {/* 2. 正文右上角的小圆圈 ① */}
     <sup class="ref-superscript" id={`ref-link-${refDomId}`}>
         {displayId}
     </sup>
     
     {/* 3. 左侧空白区域的长方形卡片 */}
-    <span class="ref-margin-card">
+    <span class="ref-margin-card" data-ref-id={String(refDomId)}>
         {/* 卡片上的引用编号 ① */}
         <span class="card-id">{displayId}</span>
         
@@ -27,11 +27,6 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
         <span class="card-source">
             {source}
             {url && <a href={url} target="_blank" rel="noopener noreferrer" class="card-url">🔗</a>}
-        </span>
-        <span class="ref-connector" aria-hidden="true">
-            <span class="ref-connector__h1"></span>
-            <span class="ref-connector__v"></span>
-            <span class="ref-connector__h2"></span>
         </span>
     </span>
 </span>
@@ -79,52 +74,6 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
         transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
     }
 
-    /* 虚线连接魔法 ✨ */
-    .ref-connector {
-        position: absolute;
-        right: -44px;
-        top: 0;
-        width: 44px;
-        height: 100%;
-        pointer-events: none; /* 虚线不影响点击 */
-        --line-color: rgba(163, 184, 214, 0.4);
-        --line-mid-x: 14px;
-        --line-end-x: 44px;
-    }
-
-    .ref-connector__h1,
-    .ref-connector__v,
-    .ref-connector__h2 {
-        position: absolute;
-        display: block;
-        pointer-events: none;
-        transition: border-color 0.25s ease;
-    }
-
-    .ref-connector__h1 {
-        left: 0;
-        top: var(--ref-center-y, 50%);
-        width: var(--line-mid-x);
-        height: 0;
-        border-top: 1px dashed var(--line-color);
-    }
-
-    .ref-connector__v {
-        left: var(--line-mid-x);
-        top: var(--ref-bend-top, 50%);
-        height: var(--ref-bend-height, 0px);
-        width: 0;
-        border-left: 1px dashed var(--line-color);
-    }
-
-    .ref-connector__h2 {
-        left: var(--line-mid-x);
-        top: var(--ref-line-y, 50%);
-        width: calc(var(--line-end-x) - var(--line-mid-x));
-        height: 0;
-        border-top: 1px dashed var(--line-color);
-    }
-
     .ref-superscript:hover + .ref-margin-card,
     .ref-citation-group.is-active .ref-margin-card {
         background: rgba(163, 184, 214, 0.12);
@@ -132,9 +81,30 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
         box-shadow: 0 0 0 1px rgba(163, 184, 214, 0.25), 0 0 18px rgba(163, 184, 214, 0.28);
     }
 
-    .ref-superscript:hover + .ref-margin-card .ref-connector,
-    .ref-citation-group.is-active .ref-margin-card .ref-connector {
-        --line-color: rgba(163, 184, 214, 0.75);
+    :global(.ref-routing-overlay) {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 9; /* 略低于卡片 z-index:10，保持线在卡片下方 */
+        overflow: visible;
+    }
+
+    :global(.ref-routing-path) {
+        fill: none;
+        stroke: rgba(163, 184, 214, 0.45);
+        stroke-width: 1.1;
+        stroke-dasharray: 4 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        transition: stroke 0.25s ease, stroke-width 0.25s ease;
+    }
+
+    :global(.ref-routing-path.is-active) {
+        stroke: rgba(163, 184, 214, 0.85);
+        stroke-width: 1.35;
     }
 
     .card-id {
@@ -185,12 +155,85 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
         const MIN_LEFT = 12; // 避免超小窗口时贴边
         const MIN_CARD_GAP = 14; // 卡片之间最小垂直间距，防止重叠
 
+        const ROUTE_STEP_Y = 52; // 每增加约 52px 的垂直差，新增一次 90° 折叠
+        const ROUTE_MIN_HOP = 18; // 每一折的最小水平位移
+        const ROUTE_MAX_HOP = 72; // 每一折的最大水平位移
+        const ROUTE_RIGHT_PAD = 6; // 连接到卡片右边中点时的轻微内缩
+
+        const getRoutingOverlay = () => {
+            let overlay = document.querySelector('.ref-routing-overlay') as SVGSVGElement | null;
+            if (!overlay) {
+                overlay = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                overlay.setAttribute('class', 'ref-routing-overlay');
+                overlay.setAttribute('aria-hidden', 'true');
+                document.body.appendChild(overlay);
+            }
+            overlay.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
+            return overlay;
+        };
+
+        const getParagraphAnchor = (supEl: HTMLElement) => {
+            const block = supEl.closest('p, li, blockquote, dd, dt, h1, h2, h3, h4, h5, h6') as HTMLElement | null;
+            const baseEl = block || supEl;
+            const rect = baseEl.getBoundingClientRect();
+            const styles = window.getComputedStyle(baseEl);
+            const lineHeight = Number.parseFloat(styles.lineHeight) || 22;
+            const paddingLeft = Number.parseFloat(styles.paddingLeft) || 0;
+            const supRect = supEl.getBoundingClientRect();
+
+            // X 锚定段落开头；Y 锚定当前引用所在“视觉行”
+            // 这样同一段中的多条换行引用（同一个 <p>）也能分别对齐。
+            return {
+                x: rect.left + Math.max(2, paddingLeft),
+                y: supRect.top + Math.min(Math.max(8, supRect.height * 0.55), Math.max(10, lineHeight * 0.55)),
+            };
+        };
+
+        const buildOrthogonalRoute = (
+            startX: number,
+            startY: number,
+            endX: number,
+            endY: number
+        ) => {
+            const points: Array<{ x: number; y: number }> = [{ x: startX, y: startY }];
+            const dx = startX - endX;
+            const dy = endY - startY;
+            const folds = Math.max(1, Math.ceil(Math.abs(dy) / ROUTE_STEP_Y));
+            const hop = Math.max(ROUTE_MIN_HOP, Math.min(ROUTE_MAX_HOP, dx / (folds + 1)));
+
+            let x = startX;
+            let y = startY;
+            for (let i = 1; i <= folds; i++) {
+                x -= hop;
+                points.push({ x, y }); // 横向
+
+                y = startY + (dy * i) / folds;
+                points.push({ x, y }); // 纵向（90°折）
+            }
+
+            if (x > endX) points.push({ x: endX, y });
+            if (y !== endY) points.push({ x: endX, y: endY });
+            return points;
+        };
+
+        const pointsToPathD = (points: Array<{ x: number; y: number }>) => {
+            if (!points.length) return '';
+            const commands = [`M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`];
+            for (let i = 1; i < points.length; i++) {
+                commands.push(`L ${points[i].x.toFixed(1)} ${points[i].y.toFixed(1)}`);
+            }
+            return commands.join(' ');
+        };
+
         const alignReferenceCards = () => {
             const groups = document.querySelectorAll('.ref-citation-group');
             const layoutItems: Array<{
+                groupEl: HTMLElement;
+                supEl: HTMLElement;
                 cardEl: HTMLElement;
                 supRect: DOMRect;
                 cardHeight: number;
+                cardWidth: number;
                 desiredTop: number;
                 naturalTop: number;
             }> = [];
@@ -199,6 +242,7 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
                 const sup = group.querySelector('.ref-superscript');
                 const card = group.querySelector('.ref-margin-card');
                 if (!sup || !card) return;
+                const groupEl = group as HTMLElement;
                 const cardEl = card as HTMLElement;
                 const supEl = sup as HTMLElement;
 
@@ -220,9 +264,12 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
                 const desiredTop = supCenterY - cardRect.height / 2;
 
                 layoutItems.push({
+                    groupEl,
+                    supEl,
                     cardEl,
                     supRect,
                     cardHeight: cardRect.height,
+                    cardWidth: cardRect.width,
                     desiredTop,
                     naturalTop: cardRect.top,
                 });
@@ -238,18 +285,32 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
             });
 
             layoutItems.forEach((item) => {
-                const finalCardTop = item.naturalTop + Number.parseFloat(item.cardEl.style.getPropertyValue('--ref-shift-y'));
-                const supCenterY = item.supRect.top + item.supRect.height / 2;
-                const rawLineY = supCenterY - finalCardTop;
-                const clampedLineY = Math.max(8, Math.min(item.cardHeight - 8, rawLineY));
-                const centerY = item.cardHeight / 2;
-                const bendTop = Math.min(centerY, clampedLineY);
-                const bendHeight = Math.abs(centerY - clampedLineY);
+                const shiftY = Number.parseFloat(item.cardEl.style.getPropertyValue('--ref-shift-y')) || 0;
+                const finalCardTop = item.naturalTop + shiftY;
+                item.cardEl.style.setProperty('--ref-line-y', `${Math.round(item.supRect.top + item.supRect.height / 2 - finalCardTop)}px`);
+            });
 
-                item.cardEl.style.setProperty('--ref-line-y', `${Math.round(clampedLineY)}px`);
-                item.cardEl.style.setProperty('--ref-center-y', `${Math.round(centerY)}px`);
-                item.cardEl.style.setProperty('--ref-bend-top', `${Math.round(bendTop)}px`);
-                item.cardEl.style.setProperty('--ref-bend-height', `${Math.round(bendHeight)}px`);
+            const overlay = getRoutingOverlay();
+            overlay.innerHTML = '';
+
+            layoutItems.forEach((item) => {
+                const cardRect = item.cardEl.getBoundingClientRect();
+                const anchor = getParagraphAnchor(item.supEl);
+                const endX = cardRect.right - ROUTE_RIGHT_PAD;
+                const endY = cardRect.top + cardRect.height / 2;
+
+                const points = buildOrthogonalRoute(anchor.x, anchor.y, endX, endY);
+                const d = pointsToPathD(points);
+                if (!d) return;
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('class', 'ref-routing-path');
+                path.setAttribute('data-ref-id', item.groupEl.dataset.refId || '');
+                if (item.groupEl.classList.contains('is-active')) {
+                    path.classList.add('is-active');
+                }
+                path.setAttribute('d', d);
+                overlay.appendChild(path);
             });
         };
 
@@ -269,8 +330,10 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
                         if (activeGroup !== groupEl) activeGroup.classList.remove('is-active');
                     });
                     groupEl.classList.add('is-active');
+                    alignReferenceCards();
                     window.setTimeout(() => {
                         groupEl.classList.remove('is-active');
+                        alignReferenceCards();
                     }, 1800);
                 });
 
@@ -278,13 +341,23 @@ const refDomId = hasValidId ? normalizedId : 'unknown';
             });
         };
 
-        window.addEventListener('resize', alignReferenceCards, { passive: true });
-        window.addEventListener('load', alignReferenceCards);
+        let raf = 0;
+        const requestAlign = () => {
+            if (raf) return;
+            raf = window.requestAnimationFrame(() => {
+                raf = 0;
+                alignReferenceCards();
+            });
+        };
+
+        window.addEventListener('resize', requestAlign, { passive: true });
+        window.addEventListener('scroll', requestAlign, { passive: true });
+        window.addEventListener('load', requestAlign);
         document.addEventListener('DOMContentLoaded', () => {
             bindReferenceInteractions();
-            alignReferenceCards();
+            requestAlign();
         });
         bindReferenceInteractions();
-        alignReferenceCards();
+        requestAlign();
     }
 </script>

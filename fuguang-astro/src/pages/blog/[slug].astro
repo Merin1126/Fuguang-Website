@@ -12,6 +12,9 @@ import CalloutNeon from '../../components/Neon Warning Grid.astro';
 import KeywordChip from '../../components/KeywordChip.astro';
 import ReferenceCitation from '../../components/ReferenceCitation.astro';
 import ProfileCard from '../../components/ProfileCard.astro';
+import Signature from '../../components/Signature.astro'; // 👈 新增
+import DashedDivider from '../../components/DashedDivider.astro';
+import SideImage from '../../components/SideImage.astro';
 
 export async function getStaticPaths() {
     const blogEntries = await getCollection('blog');
@@ -35,6 +38,11 @@ const mdxComponents = {
     'directive-kw': KeywordChip,
     'directive-ref': ReferenceCitation, // 注入参考文献指令
     'directive-profile': ProfileCard,
+    'directive-sideimg': SideImage,
+    'directive-dash': DashedDivider,
+    // remark 将 :::sig / ::sig 映射为 directive-sig（不是 directive-signature）
+    'directive-sig': Signature,
+    'directive-signature': Signature,
 };
 ---
 

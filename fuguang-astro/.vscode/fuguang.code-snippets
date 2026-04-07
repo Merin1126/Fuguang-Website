@@ -70,5 +70,31 @@
       ":::"
     ],
     "description": "插入带头像的左右排版档案卡片"
+  },
+  "Signature 署名样式": {
+    "prefix": "sig",
+    "body": [
+      ":::sig",
+      "${1:© 2026 撰写于东京 · 扶光}",
+      ":::"
+    ],
+    "description": "插入扶光专属署名（容器 :::sig，套用 .fuguang-signature）"
+  },
+  "Dash Divider 虚线分隔符": {
+    "prefix": "dash",
+    "body": [
+      ":::dash{mt=\"${1:16px}\" mb=\"${2:16px}\" opacity=\"${3:0.3}\"}",
+      ":::"
+    ],
+    "description": "插入可复用的虚线分隔符（mdx 指令）"
+  },
+  "SideImage 图文混排": {
+    "prefix": "side",
+    "body": [
+      ":::sideimg{src=\"${1:logo.png}\" pos=\"${2|left,right|}\" width=\"${3:300}\" alt=\"${4:图片说明}\"}",
+      "$5",
+      ":::"
+    ],
+    "description": "插入支持左右控制的图文排版块"
   }
 }

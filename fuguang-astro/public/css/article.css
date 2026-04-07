@@ -410,3 +410,38 @@ rt {
     border-radius: 12px; /* 契合你全站的 Bento UI 圆角风格 */
     box-shadow: var(--shadow-base); /* 加上一点微弱的浮雕阴影，显得更精致 */
 }
+
+/* MDX <h3> 三级标题美化 */
+.article-content h3 {
+    font-size: 1.15em;
+    color: var(--text-title); /* 保持标题颜色 */
+    font-weight: 700;
+    margin-top: 40px; /* 距离上方远一点，拉开呼吸感 */
+    margin-bottom: 20px;
+    padding-left: 14px; /* 为左侧边框留出空间 */
+    border-left: 4px solid var(--color-primary); /* 扶光专属的雾霾蓝左侧光标 */
+    line-height: 1.4;
+    position: relative;
+}
+
+/* MDX <strong> 加粗文字特效 */
+.article-content strong {
+    font-weight: 700; /* 确保字重足够 */
+    color: var(--color-primary); /* 文字本身变成品牌色 */
+    /* 核心魔法：底部的半透明荧光笔下划线特效 */
+    background: linear-gradient(to top, rgba(163, 184, 214, 0.3) 30%, transparent 30%);
+    padding: 0 2px; /* 让高亮稍微溢出文字一点点 */
+    border-radius: 2px;
+}
+
+/* 扶光专属：文章署名与附注说明 */
+.fuguang-signature {
+    display: block; /* 独占一行 */
+    margin-top: 3px;
+    font-size: 16px;
+    color: var(--text-muted); /* 定义在 global.css :root */
+    font-family: var(--font-ja); /* 与 global.css [lang="ja"] 同源 */
+    font-style: italic; /* 斜体增加文学感 */
+    letter-spacing: 0.05em; /* 稍微拉开字距，显得更精致 */
+    text-align: left; /* 署名通常靠右排版更优雅，如果想居左改成 left */
+}

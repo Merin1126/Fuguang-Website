@@ -26,6 +26,11 @@
     /* 正文色：中灰，在深色背景上护眼且清晰 */
     --text-color: #e0e0e0;
     /* 👈 新增：你专属的正文全局颜色 */
+    --text-muted: #8b9eb7;
+    /* 次要说明、署名等：与 article 中 .fuguang-signature 等共用 */
+
+    /* 日文字体栈（与下方 [lang="ja"] 一致，供全站 var(--font-ja) 引用） */
+    --font-ja: 'M PLUS 1', sans-serif;
 
     /* --- 边框与阴影 --- */
     --border-light: rgba(255, 255, 255, 0.06);
@@ -72,7 +77,7 @@ body {
 
 /* 仅日文语义块使用 M PLUS 1，避免中文出现异体字 */
 [lang="ja"] {
-    font-family: 'M PLUS 1', sans-serif;
+    font-family: var(--font-ja);
 }
 
 /* =========================================

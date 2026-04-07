@@ -1,0 +1,171 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+    src?: string;
+    pos?: 'left' | 'right' | string;
+    width?: number | string;
+    alt?: string;
+}
+
+const { src, pos = 'left', width = 300, alt = '' } = Astro.props as Props;
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+    '/src/assets/**/*.{jpeg,jpg,png,gif,webp,svg}'
+);
+
+const imagePath = src ? `/src/assets/${src}` : null;
+const load = imagePath ? images[imagePath] : undefined;
+const imageMod = load ? await load() : null;
+const imageSrc = imageMod?.default ?? null;
+
+if (src && !load) {
+    console.warn(`[SideImage] 找不到图片: ${imagePath}`);
+}
+
+const isRight = String(pos).toLowerCase() === 'right';
+const isSvg = typeof src === 'string' && src.toLowerCase().endsWith('.svg');
+const parsedWidth = Number.parseInt(String(width), 10);
+const safeWidth = Number.isFinite(parsedWidth) && parsedWidth > 0 ? parsedWidth : 300;
+---
+
+<div class={`fuguang-side-image ${isRight ? 'align-right' : 'align-left'}`}>
+    {
+        imageSrc && !isSvg && (
+            <div class="side-image-wrapper" style={`--side-image-width:${safeWidth}px;`}>
+                <Image src={imageSrc} alt={alt || 'Side image'} width={safeWidth} />
+            </div>
+        )
+    }
+    {
+        imageSrc && isSvg && (
+            <div class="side-image-wrapper" style={`--side-image-width:${safeWidth}px;`}>
+                <img
+                    src={imageSrc.src}
+                    alt={alt || 'Side image'}
+                    loading="lazy"
+                    decoding="async"
+                    width={safeWidth}
+                />
+            </div>
+        )
+    }
+
+    <div class="side-text-content">
+        <slot />
+    </div>
+</div>
+
+<style>
+    .fuguang-side-image {
+        display: flex;
+        gap: 32px;
+        margin: 32px 0;
+        align-items: flex-start;
+    }
+
+    .fuguang-side-image.align-right {
+        flex-direction: row-reverse;
+    }
+
+    .fuguang-side-image.align-left {
+        flex-direction: row;
+    }
+
+    .side-image-wrapper {
+        flex: 0 0 var(--side-image-width, 300px);
+        width: var(--side-image-width, 300px);
+        align-self: flex-start;
+        margin-top: 0 !important;
+        transform: translateY(var(--side-image-shift-y, 0px));
+    }
+
+    .side-image-wrapper :global(picture) {
+        display: block;
+        line-height: 0;
+        font-size: 0;
+    }
+
+    .side-image-wrapper img,
+    .side-image-wrapper :global(img) {
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: var(--shadow-base);
+        display: block;
+    }
+
+    .side-text-content {
+        flex: 1;
+        min-width: 0;
+        align-self: flex-start;
+        margin-top: 0 !important;
+    }
+
+    .side-text-content > :global(:first-child) {
+        margin-top: 0 !important;
+    }
+
+    @media (max-width: 768px) {
+        .fuguang-side-image {
+            flex-direction: column !important;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .side-image-wrapper {
+            width: 100%;
+            max-width: 500px;
+            flex-basis: auto;
+            transform: none;
+        }
+    }
+</style>
+
+<script>
+    const win = window as Window & { __fuguangSideImageAlignInited?: boolean };
+
+    if (!win.__fuguangSideImageAlignInited) {
+        win.__fuguangSideImageAlignInited = true;
+
+        const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+        const alignVisualTop = () => {
+            const blocks = document.querySelectorAll('.fuguang-side-image');
+            blocks.forEach((block) => {
+                const wrapper = block.querySelector('.side-image-wrapper') as HTMLElement | null;
+                const text = block.querySelector('.side-text-content') as HTMLElement | null;
+                if (!wrapper || !text) return;
+
+                const firstTextEl = text.firstElementChild as HTMLElement | null;
+                const imgEl = wrapper.querySelector('img, picture') as HTMLElement | null;
+                if (!firstTextEl || !imgEl) return;
+
+                if (window.matchMedia('(max-width: 768px)').matches) {
+                    wrapper.style.setProperty('--side-image-shift-y', '0px');
+                    return;
+                }
+
+                const textTop = firstTextEl.getBoundingClientRect().top;
+                const imgTop = imgEl.getBoundingClientRect().top;
+                const delta = clamp(textTop - imgTop, -28, 28);
+                wrapper.style.setProperty('--side-image-shift-y', `${Math.round(delta)}px`);
+            });
+        };
+
+        let rafId = 0;
+        const requestAlign = () => {
+            if (rafId) return;
+            rafId = window.requestAnimationFrame(() => {
+                rafId = 0;
+                alignVisualTop();
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', requestAlign);
+        window.addEventListener('load', requestAlign);
+        window.addEventListener('resize', requestAlign, { passive: true });
+        requestAlign();
+    }
+</script>
