@@ -1,0 +1,200 @@
+/* =========================================
+   Main Footer (Stats + Copyright)
+========================================= */
+.fuguang-main-footer {
+    margin: 40px auto 20px;
+    width: 100%;
+}
+
+.fuguang-main-footer__base {
+    position: relative;
+    border-radius: 12px;
+    padding: 24px 16px 16px;
+    background: linear-gradient(135deg, rgb(42, 42, 42) 0%, rgb(36, 36, 36) 100%);
+    border: 1px solid hsla(0, 0%, 100%, 0.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.fuguang-main-footer__stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    position: relative;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* 用两条竖向渐变线分隔三个统计项 */
+.fuguang-main-footer__stats-grid::before,
+.fuguang-main-footer__stats-grid::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    bottom: 12px;
+    width: 1px;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(163, 184, 214, 0.5) 50%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 3;
+}
+
+.fuguang-main-footer__stats-grid::before {
+    left: calc(100% / 3);
+}
+
+.fuguang-main-footer__stats-grid::after {
+    left: calc(100% * 2 / 3);
+}
+
+.fuguang-main-footer__stat-card {
+    background-color: #1f1f1f;
+    border: none;
+    border-radius: 0;
+    padding: 16px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 92px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.32s ease, background-color 0.32s ease;
+}
+
+/* 边框流光层：仅在 hover 时显现，使用镂空遮罩让光束只沿边框流动 */
+.fuguang-main-footer__stat-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 0;
+    padding: 1px;
+    background: linear-gradient(
+        110deg,
+        transparent 8%,
+        rgba(163, 184, 214, 0) 30%,
+        rgba(163, 184, 214, 0.42) 46%,
+        rgba(212, 184, 150, 0.34) 54%,
+        rgba(163, 184, 214, 0) 70%,
+        transparent 92%
+    );
+    background-size: 220% 100%;
+    background-position: 120% 0;
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease, background-position 0.6s ease;
+}
+
+/* 轻微扫光，不改变卡片尺寸 */
+.fuguang-main-footer__stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -130%;
+    width: 55%;
+    height: 100%;
+    background: linear-gradient(
+        105deg,
+        transparent 0%,
+        rgba(163, 184, 214, 0.2) 50%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+    transition: left 0.55s ease;
+}
+
+.fuguang-main-footer__icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(38deg, #303030, #505052, #262626);
+    color: var(--color-primary);
+    font-size: 15px;
+    flex: 0 0 auto;
+    transition: color 0.28s ease;
+}
+
+.fuguang-main-footer__text {
+    min-width: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.fuguang-main-footer__stat-label {
+    color: var(--text-body);
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0 0 4px;
+}
+
+.fuguang-main-footer__stat-value {
+    color: var(--text-title);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+    word-break: break-word;
+}
+
+.fuguang-main-footer__stat-card:hover {
+    /* hover 时回到更深黑色，形成“聚焦”层次 */
+    background-color: rgba(24, 24, 27, 0.96);
+    box-shadow: inset 0 0 0 1px rgba(163, 184, 214, 0.08);
+}
+
+.fuguang-main-footer__stat-card:hover::before {
+    opacity: 1;
+    background-position: -20% 0;
+}
+
+.fuguang-main-footer__stat-card:hover::after {
+    left: 120%;
+}
+
+.fuguang-main-footer__stat-card:hover .fuguang-main-footer__icon-wrapper {
+    color: var(--color-accent);
+}
+
+.fuguang-main-footer__copyright {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    background-color: #1f1f1f;
+    text-align: center;
+}
+
+.fuguang-main-footer__copyright p {
+    margin: 0;
+    color: var(--text-body);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+    .fuguang-main-footer__base {
+        padding: 20px 14px 14px;
+    }
+
+    .fuguang-main-footer__stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fuguang-main-footer__stats-grid::before,
+    .fuguang-main-footer__stats-grid::after {
+        display: none;
+    }
+}

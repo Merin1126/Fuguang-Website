@@ -8,6 +8,7 @@ const displayDate = date
   : '';
 import Navbar from '../components/Navbar.astro';
 import BottomNav from '../components/BottomNav.astro';
+import MainFooter from '../components/MainFooter.astro';
 ---
 
 <!DOCTYPE html>
@@ -62,6 +63,9 @@ import BottomNav from '../components/BottomNav.astro';
         </aside>
     </main>
 
+    <div class="home-main">
+        <MainFooter />
+    </div>
     <BottomNav />
 
     <script>

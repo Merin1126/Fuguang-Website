@@ -1,0 +1,33 @@
+---
+const stats = [
+    { label: '今日人次', value: '31744', icon: 'fa-solid fa-fire' },
+    { label: '昨日人次', value: '83172', icon: 'fa-solid fa-chart-line' },
+    { label: '最新会员', value: 'ququ', icon: 'fa-solid fa-user-plus' },
+];
+---
+
+<link rel="stylesheet" href="/css/footer.css" />
+
+<footer class="fuguang-main-footer">
+    <div class="fuguang-main-footer__base">
+        <section class="fuguang-main-footer__stats-grid" aria-label="网站统计数据">
+            {
+                stats.map((item) => (
+                    <article class="fuguang-main-footer__stat-card">
+                        <div class="fuguang-main-footer__icon-wrapper" aria-hidden="true">
+                            <i class={item.icon}></i>
+                        </div>
+                        <div class="fuguang-main-footer__text">
+                            <p class="fuguang-main-footer__stat-label">{item.label}</p>
+                            <p class="fuguang-main-footer__stat-value">{item.value}</p>
+                        </div>
+                    </article>
+                ))
+            }
+        </section>
+
+        <div class="fuguang-main-footer__copyright">
+            <p>Copyright © 2026 扶光日语. All Rights Reserved.</p>
+        </div>
+    </div>
+</footer>
