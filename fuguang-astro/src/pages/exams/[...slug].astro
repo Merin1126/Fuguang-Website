@@ -1,0 +1,54 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+import CalloutAccent from '../../components/The Top Accent.astro';
+import CalloutGlow from '../../components/The Glowing Edge.astro';
+import CalloutBadge from '../../components/The Badge Floating.astro';
+import CalloutWire from '../../components/Minimal Wireframe.astro';
+import CalloutGlass from '../../components/Frosted Glass.astro';
+import CalloutNeon from '../../components/Neon Warning Grid.astro';
+import KeywordChip from '../../components/KeywordChip.astro';
+import ReferenceCitation from '../../components/ReferenceCitation.astro';
+import ProfileCard from '../../components/ProfileCard.astro';
+import Signature from '../../components/Signature.astro';
+import DashedDivider from '../../components/DashedDivider.astro';
+import SideImage from '../../components/SideImage.astro';
+
+export async function getStaticPaths() {
+    const entries = await getCollection('exams');
+    return entries.map((entry) => ({
+        // 保留多级目录 slug（如 catti/translation/xxx）
+        params: { slug: entry.id.replace(/\.mdx?$/, '') },
+        props: { entry },
+    }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const mdxComponents = {
+    'directive-accent': CalloutAccent,
+    'directive-glow': CalloutGlow,
+    'directive-badge': CalloutBadge,
+    'directive-wire': CalloutWire,
+    'directive-glass': CalloutGlass,
+    'directive-neon': CalloutNeon,
+    'directive-kw': KeywordChip,
+    'directive-ref': ReferenceCitation,
+    'directive-profile': ProfileCard,
+    'directive-sideimg': SideImage,
+    'directive-dash': DashedDivider,
+    'directive-sig': Signature,
+    'directive-signature': Signature,
+};
+---
+
+<ArticleLayout
+    title={entry.data.title}
+    tag={entry.data.tag}
+    date={entry.data.date}
+    mainHeading={entry.data.mainHeading}
+>
+    <Content components={mdxComponents} />
+</ArticleLayout>

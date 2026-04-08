@@ -1,0 +1,24 @@
+---
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+const levels = [
+    { label: 'N5 语法', href: '/grammar/n5' },
+    { label: 'N4 语法', href: '/grammar/n4' },
+    { label: 'N3 语法', href: '/grammar/n3' },
+    { label: 'N2 语法', href: '/grammar/n2' },
+    { label: 'N1 语法', href: '/grammar/n1' },
+];
+---
+
+<ArticleLayout title="语法文库 - 扶光日语" mainHeading="语法文库 - 扶光日语" tag="语法频道">
+    <h2>请选择级别</h2>
+    <ul>
+        {
+            levels.map((item) => (
+                <li>
+                    <a href={item.href}>{item.label}</a>
+                </li>
+            ))
+        }
+    </ul>
+</ArticleLayout>
