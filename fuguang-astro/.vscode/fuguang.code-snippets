@@ -60,6 +60,13 @@
     ],
     "description": "Insert inline keyword directive mapped to KeywordChip"
   },
+  "Directive Reference Citation": {
+    "prefix": "ref",
+    "body": [
+      ":ref[${1:参考文献}]{id=\"${2:1}\" source=\"${3:来源}\" open=\"${4|false,true|}\"}"
+    ],
+    "description": "插入文内引用 :ref（ReferenceCitation，侧栏卡片与序号联动）"
+  },
   "Profile 档案卡片": {
     "prefix": "pro",
     "body": [
