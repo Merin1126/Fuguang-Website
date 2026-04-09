@@ -17,24 +17,186 @@ const posts = allPosts
     .map((post) => ({
         ...post,
         slug: post.id.replace(/\.mdx?$/, ''),
-    }));
+    }))
+    .sort((a, b) => a.slug.localeCompare(b.slug, 'zh-Hans-CN'));
 ---
 
-<ArticleLayout title={`${currentLevel} 语法列表`} mainHeading={`${currentLevel} 语法列表`} tag="语法频道">
-    <h2>{currentLevel} 级别文章</h2>
+<ArticleLayout
+    title={`${currentLevel} 语法列表`}
+    mainHeading={`${currentLevel} 语法列表`}
+    tag="N1语法"
+    breadcrumbSegments={[{ label: '语法文库', href: '/grammar' }]}
+    enableScrollspy={false}
+>
+    <section class="grammar-level-index" data-page-size="10">
+        <div class="grammar-level-index__toolbar">
+            <div class="grammar-level-index__actions">
+                <div class="grammar-level-index__search-wrap">
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    <input
+                        id="grammar-search-input"
+                        class="grammar-level-index__search"
+                        type="search"
+                        placeholder="搜索当前级别语法标题，按 Enter 跳转"
+                        autocomplete="off"
+                    />
+                </div>
+                <p class="grammar-level-index__hint">
+                    <span id="grammar-search-hint"></span>
+                    <span id="grammar-search-position" class="grammar-level-index__hint-position"></span>
+                </p>
+            </div>
+        </div>
+
+        <div class="grammar-level-index__pagination" id="grammar-pagination">
+            <button id="grammar-show-all-btn" class="grammar-level-index__btn" type="button">
+                显示全部语法
+            </button>
+            <div class="grammar-level-index__pager-controls" id="grammar-pager-controls">
+                <button id="grammar-prev-btn" class="grammar-level-index__btn" type="button">上一页</button>
+                <span id="grammar-page-indicator" class="grammar-level-index__page-indicator"></span>
+                <button id="grammar-next-btn" class="grammar-level-index__btn" type="button">下一页</button>
+            </div>
+        </div>
+
+        <ul class="grammar-level-index__list" id="grammar-level-list">
+            {
+                posts.map((post, idx) => (
+                    <li
+                        class="grammar-level-index__item"
+                        data-index={idx}
+                        data-title={post.data.title.toLowerCase()}
+                        data-slug={post.slug}
+                    >
+                        <a href={`/grammar/${post.slug}`} class="grammar-level-index__link">
+                            <span class="grammar-level-index__line"></span>
+                            <span class="grammar-level-index__title">{post.data.title}</span>
+                            <span class="grammar-level-index__icon" aria-hidden="true">
+                                <i class="fa-solid fa-book-open"></i>
+                            </span>
+                        </a>
+                    </li>
+                ))
+            }
+        </ul>
+    </section>
+
     {
         posts.length === 0 ? (
             <p>当前级别暂无文章。</p>
         ) : (
-            <ul>
-                {
-                    posts.map((post) => (
-                        <li>
-                            <a href={`/grammar/${post.slug}`}>{post.data.title}</a>
-                        </li>
-                    ))
-                }
-            </ul>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const list = document.getElementById('grammar-level-list') as HTMLElement | null;
+                    const prevBtn = document.getElementById('grammar-prev-btn') as HTMLButtonElement | null;
+                    const nextBtn = document.getElementById('grammar-next-btn') as HTMLButtonElement | null;
+                    const showAllBtn = document.getElementById('grammar-show-all-btn') as HTMLButtonElement | null;
+                    const pageIndicator = document.getElementById('grammar-page-indicator') as HTMLElement | null;
+                    const pagerControls = document.getElementById('grammar-pager-controls') as HTMLElement | null;
+                    const searchInput = document.getElementById('grammar-search-input') as HTMLInputElement | null;
+                    const searchHint = document.getElementById('grammar-search-hint') as HTMLElement | null;
+                    const searchPosition = document.getElementById('grammar-search-position') as HTMLElement | null;
+                    if (!list || !prevBtn || !nextBtn || !showAllBtn || !pageIndicator || !pagerControls || !searchInput || !searchHint || !searchPosition) return;
+
+                    const cards = Array.from(list.querySelectorAll<HTMLElement>('.grammar-level-index__item'));
+                    if (cards.length === 0) return;
+
+                    const pageContainer = list.closest('.grammar-level-index') as HTMLElement | null;
+                    const pageSizeRaw = Number(pageContainer?.dataset.pageSize ?? 10);
+                    const pageSize = Number.isFinite(pageSizeRaw) && pageSizeRaw > 0 ? pageSizeRaw : 10;
+                    const pageCount = Math.max(1, Math.ceil(cards.length / pageSize));
+
+                    let currentPage = 1;
+                    let showAllMode = false;
+                    let currentKeyword = '';
+                    let matchCursor = -1;
+
+                    const getMatchedCards = () => cards.filter((card) => (card.dataset.title || '').includes(currentKeyword));
+                    const updatePosition = (matchedLength: number) => {
+                        if (!currentKeyword || matchedLength === 0 || matchCursor < 0) {
+                            searchPosition.textContent = '';
+                            return;
+                        }
+                        searchPosition.textContent = `${matchCursor + 1}/${matchedLength}`;
+                    };
+
+                    const refreshHighlight = () => {
+                        cards.forEach((card) => card.classList.remove('is-search-hit'));
+                        if (!currentKeyword) {
+                            searchHint.textContent = '';
+                            searchPosition.textContent = '';
+                            return;
+                        }
+                        const matched = getMatchedCards();
+                        matched.forEach((card) => card.classList.add('is-search-hit'));
+                        searchHint.textContent = matched.length > 0
+                            ? `匹配 ${matched.length} 条，按 Enter 顺序跳转。`
+                            : '未找到匹配标题。';
+                        updatePosition(matched.length);
+                    };
+
+                    const renderList = () => {
+                        cards.forEach((card, idx) => {
+                            const start = (currentPage - 1) * pageSize;
+                            const end = start + pageSize;
+                            const shouldShow = showAllMode || (idx >= start && idx < end);
+                            card.style.display = shouldShow ? '' : 'none';
+                        });
+                        pageIndicator.textContent = showAllMode ? `共 ${cards.length} 条` : `${currentPage} / ${pageCount}`;
+                        prevBtn.disabled = showAllMode || currentPage <= 1;
+                        nextBtn.disabled = showAllMode || currentPage >= pageCount;
+                        pagerControls.style.display = showAllMode ? 'none' : 'inline-flex';
+                    };
+
+                    const ensureCardVisible = (card: HTMLElement) => {
+                        if (!showAllMode) {
+                            const idx = Number(card.dataset.index ?? 0);
+                            currentPage = Math.floor(idx / pageSize) + 1;
+                            renderList();
+                        }
+                    };
+
+                    prevBtn.addEventListener('click', () => {
+                        if (currentPage <= 1 || showAllMode) return;
+                        currentPage -= 1;
+                        renderList();
+                    });
+
+                    nextBtn.addEventListener('click', () => {
+                        if (currentPage >= pageCount || showAllMode) return;
+                        currentPage += 1;
+                        renderList();
+                    });
+
+                    showAllBtn.addEventListener('click', () => {
+                        showAllMode = !showAllMode;
+                        showAllBtn.textContent = showAllMode ? '恢复分页显示' : '显示全部语法';
+                        renderList();
+                    });
+
+                    searchInput.addEventListener('input', () => {
+                        currentKeyword = searchInput.value.trim().toLowerCase();
+                        matchCursor = -1;
+                        refreshHighlight();
+                    });
+
+                    searchInput.addEventListener('keydown', (event) => {
+                        if (event.key !== 'Enter') return;
+                        event.preventDefault();
+                        currentKeyword = searchInput.value.trim().toLowerCase();
+                        refreshHighlight();
+                        const matched = getMatchedCards();
+                        if (matched.length === 0) return;
+                        matchCursor = (matchCursor + 1) % matched.length;
+                        updatePosition(matched.length);
+                        const target = matched[matchCursor];
+                        ensureCardVisible(target);
+                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    });
+
+                    renderList();
+                });
+            </script>
         )
     }
 </ArticleLayout>

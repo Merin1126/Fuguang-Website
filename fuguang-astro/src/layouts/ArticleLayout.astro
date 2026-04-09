@@ -2,7 +2,17 @@
 // src/layouts/ArticleLayout.astro
 // 这里可以写一点服务器端的 JS，比如接收外面传进来的标题
 const props = Astro.props.frontmatter || Astro.props;
-const { title = '', tag = '', date, mainHeading = '' } = props;
+const {
+    title = '',
+    tag = '',
+    date,
+    mainHeading = '',
+    breadcrumbSegments,
+    showBreadcrumbCurrent = true,
+    enableScrollspy = true,
+} = props;
+const defaultBreadcrumbSegments = [{ label: '文章', href: '/articles' }];
+const resolvedBreadcrumbSegments = breadcrumbSegments ?? defaultBreadcrumbSegments;
 const displayDate = date
   ? (date instanceof Date ? date.toISOString().split('T')[0] : String(date).split('T')[0])
   : '';
@@ -28,10 +38,24 @@ import MainFooter from '../components/MainFooter.astro';
     <main id="top" class="home-main" style="padding-top: 100px; padding-bottom: 120px;">
         <div class="breadcrumbs">
             <a href="/">首页</a>
-            <span class="separator"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></span>
-            <a href="/articles">文章</a>
-            <span class="separator"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></span>
-            <span>{mainHeading || title}</span>
+            {
+                resolvedBreadcrumbSegments.map((seg: { label: string; href?: string }) => (
+                    <>
+                        <span class="separator">
+                            <i class="fa-solid fa-chevron-right" style="font-size: 10px;" />
+                        </span>
+                        {seg.href ? <a href={seg.href}>{seg.label}</a> : <span>{seg.label}</span>}
+                    </>
+                ))
+            }
+            {showBreadcrumbCurrent && (
+                <>
+                    <span class="separator">
+                        <i class="fa-solid fa-chevron-right" style="font-size: 10px;" />
+                    </span>
+                    <span>{mainHeading || title}</span>
+                </>
+            )}
         </div>
 
         <article class="fuguang-article">
@@ -48,24 +72,25 @@ import MainFooter from '../components/MainFooter.astro';
             </section>
         </article>
         
-        <aside class="fuguang-toc">
-            <div class="toc-track">
-                <div class="track-line"></div>
-                <div class="track-thumb" id="toc-thumb"></div>
-                <div class="toc-last-read-marker" id="toc-last-read" style="display: none;">
-                    <div class="last-read-line"></div> <button class="last-read-btn Bento-style-btn" id="toc-back-btn">返回</button>
+        {enableScrollspy && (
+            <aside class="fuguang-toc">
+                <div class="toc-track">
+                    <div class="track-line"></div>
+                    <div class="track-thumb" id="toc-thumb"></div>
+                    <div class="toc-last-read-marker" id="toc-last-read" style="display: none;">
+                        <div class="last-read-line"></div> <button class="last-read-btn Bento-style-btn" id="toc-back-btn">返回</button>
+                    </div>
                 </div>
-            </div>
-            <div class="toc-info">
-                <div class="toc-progress" id="toc-progress">0%</div>
-                <div class="toc-current-title" id="toc-title">开始阅读</div>
-            </div>
-        </aside>
+                <div class="toc-info">
+                    <div class="toc-progress" id="toc-progress">0%</div>
+                    <div class="toc-current-title" id="toc-title">开始阅读</div>
+                </div>
+            </aside>
+        )}
+
+        <MainFooter />
     </main>
 
-    <div class="home-main">
-        <MainFooter />
-    </div>
     <BottomNav />
 
     <script>

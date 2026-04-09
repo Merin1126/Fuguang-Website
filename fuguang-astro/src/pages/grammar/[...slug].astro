@@ -12,8 +12,17 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+
+const level = entry.data.level;
+const grammarBreadcrumb: { label: string; href?: string }[] = [{ label: '语法文库', href: '/grammar' }];
+if (level) {
+    grammarBreadcrumb.push({
+        label: `${level} 语法列表`,
+        href: `/grammar/${level.toLowerCase()}`,
+    });
+}
 ---
 
-<ArticleLayout {...entry.data}>
+<ArticleLayout {...entry.data} breadcrumbSegments={grammarBreadcrumb}>
     <Content />
 </ArticleLayout>

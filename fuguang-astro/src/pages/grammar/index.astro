@@ -2,23 +2,63 @@
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 
 const levels = [
-    { label: 'N5 语法', href: '/grammar/n5' },
-    { label: 'N4 语法', href: '/grammar/n4' },
-    { label: 'N3 语法', href: '/grammar/n3' },
-    { label: 'N2 语法', href: '/grammar/n2' },
-    { label: 'N1 语法', href: '/grammar/n1' },
+    {
+        label: 'N5 语法',
+        href: '/grammar/n5',
+        icon: 'fa-solid fa-book-open',
+        desc: '初级',
+    },
+    {
+        label: 'N4 语法',
+        href: '/grammar/n4',
+        icon: 'fa-solid fa-book-open',
+        desc: '初中级',
+    },
+    {
+        label: 'N3 语法',
+        href: '/grammar/n3',
+        icon: 'fa-solid fa-book-open',
+        desc: '中级',
+    },
+    {
+        label: 'N2 语法',
+        href: '/grammar/n2',
+        icon: 'fa-solid fa-book-open',
+        desc: '中高级',
+    },
+    {
+        label: 'N1 语法',
+        href: '/grammar/n1',
+        icon: 'fa-solid fa-book-open',
+        desc: '高级',
+    },
 ];
 ---
 
-<ArticleLayout title="语法文库 - 扶光日语" mainHeading="语法文库 - 扶光日语" tag="语法频道">
-    <h2>请选择级别</h2>
-    <ul>
+<ArticleLayout
+    title="语法文库"
+    mainHeading="语法文库"
+    tag="日语语法"
+    breadcrumbSegments={[{ label: '语法文库' }]}
+    showBreadcrumbCurrent={false}
+    enableScrollspy={false}
+>
+    <section class="grammar-level-bento" aria-label="语法级别导航">
         {
             levels.map((item) => (
-                <li>
-                    <a href={item.href}>{item.label}</a>
-                </li>
+                <a href={item.href} class="grammar-level-bento__item">
+                    <span class="grammar-level-bento__icon" aria-hidden="true">
+                        <i class={item.icon}></i>
+                    </span>
+                    <span class="grammar-level-bento__content">
+                        <span class="grammar-level-bento__title">{item.label}</span>
+                        <span class="grammar-level-bento__desc">{item.desc}</span>
+                    </span>
+                    <span class="grammar-level-bento__arrow" aria-hidden="true">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </a>
             ))
         }
-    </ul>
+    </section>
 </ArticleLayout>

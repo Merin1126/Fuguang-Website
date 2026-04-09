@@ -198,6 +198,344 @@ rt {
 }
 
 /* =========================================
+   语法列表页：竖向 Bento 导航
+========================================= */
+.grammar-level-bento {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 10px;
+}
+
+.grammar-level-bento__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: var(--text-title);
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 14px 16px;
+    min-height: 92px;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.grammar-level-bento__item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(120deg, rgba(163, 184, 214, 0.2), transparent 38%),
+        radial-gradient(circle at 90% 50%, rgba(212, 184, 150, 0.18), transparent 48%);
+    opacity: 0;
+    transition: opacity 0.22s ease;
+    pointer-events: none;
+}
+
+.grammar-level-bento__item:hover {
+    transform: translateY(-2px);
+    border-color: rgba(163, 184, 214, 0.45);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+}
+
+.grammar-level-bento__item:hover::before {
+    opacity: 1;
+}
+
+.grammar-level-bento__item:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+.grammar-level-bento__icon {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid rgba(163, 184, 214, 0.38);
+    background: linear-gradient(145deg, rgba(163, 184, 214, 0.22), rgba(163, 184, 214, 0.1));
+    color: var(--color-primary);
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.grammar-level-bento__content {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.grammar-level-bento__title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-title);
+    line-height: 1.35;
+}
+
+.grammar-level-bento__desc {
+    font-size: 13px;
+    color: var(--text-body);
+    line-height: 1.55;
+}
+
+.grammar-level-bento__arrow {
+    color: var(--text-muted);
+    transition: transform 0.22s ease, color 0.22s ease;
+}
+
+.grammar-level-bento__item:hover .grammar-level-bento__arrow {
+    transform: translateX(4px);
+    color: var(--color-accent);
+}
+
+@media (max-width: 600px) {
+    .grammar-level-bento__item {
+        grid-template-columns: 40px 1fr auto;
+        gap: 12px;
+        padding: 12px;
+        min-height: 84px;
+    }
+
+    .grammar-level-bento__icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+        font-size: 16px;
+    }
+
+    .grammar-level-bento__title {
+        font-size: 16px;
+    }
+
+    .grammar-level-bento__desc {
+        font-size: 12px;
+    }
+}
+
+/* =========================================
+   语法二级列表：线性隐藏卡片 + 分页
+========================================= */
+.grammar-level-index {
+    margin-top: 8px;
+}
+
+.grammar-level-index__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.grammar-level-index__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.grammar-level-index__search-wrap {
+    height: 38px;
+    min-width: min(100%, 260px);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 999px;
+    background: var(--bg-card);
+}
+
+.grammar-level-index__search-wrap i {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.grammar-level-index__search {
+    width: clamp(150px, 22vw, 220px);
+    border: none;
+    outline: none;
+    color: var(--text-title);
+    background: transparent;
+    font-size: 14px;
+}
+
+.grammar-level-index__hint {
+    min-height: 18px;
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+}
+
+.grammar-level-index__hint-position {
+    margin-left: 8px;
+    color: var(--color-accent);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.grammar-level-index__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.grammar-level-index__pager-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.grammar-level-index__page-indicator {
+    color: var(--text-body);
+    font-size: 13px;
+    min-width: 70px;
+    text-align: center;
+}
+
+.grammar-level-index__btn {
+    height: 36px;
+    border-radius: 999px;
+    border: 1px solid var(--border-light);
+    background: var(--bg-card);
+    color: var(--text-body);
+    padding: 0 14px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.grammar-level-index__btn:hover:not(:disabled) {
+    border-color: rgba(163, 184, 214, 0.5);
+    color: var(--color-accent);
+    transform: translateY(-1px);
+}
+
+.grammar-level-index__btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.grammar-level-index__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.grammar-level-index__item {
+    margin: 0;
+}
+
+.grammar-level-index__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding: 0 20px;
+    margin: 0;
+    border-radius: 5px;
+    gap: 0;
+    font-size: .9em;
+    font-weight: 300;
+    padding-right: 60px;
+    text-decoration: none;
+    color: var(--text-title);
+    border: 1px solid transparent;
+    background: transparent;
+    transition: border-color 0.22s ease, background-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+/* 默认只显示一根分隔线，提示相对位置 */
+.grammar-level-index__line {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(163, 184, 214, 0.5) 50%, transparent 100%);
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.grammar-level-index__title {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.grammar-level-index__icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 13px;
+    transition: color 0.22s ease;
+}
+
+/* hover 才完整浮现卡片边框 */
+.grammar-level-index__link:hover,
+.grammar-level-index__link:focus-visible {
+    border-color: rgba(163, 184, 214, 0.46);
+    background-color: rgba(255, 255, 255, 0.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    outline: none;
+}
+
+.grammar-level-index__link:hover .grammar-level-index__line,
+.grammar-level-index__link:focus-visible .grammar-level-index__line {
+    opacity: 0;
+}
+
+.grammar-level-index__link:hover .grammar-level-index__icon,
+.grammar-level-index__link:focus-visible .grammar-level-index__icon {
+    color: var(--color-accent);
+}
+
+/* 搜索命中高亮 */
+.grammar-level-index__item.is-search-hit .grammar-level-index__link {
+    border-color: rgba(212, 184, 150, 0.55);
+    background: linear-gradient(90deg, rgba(212, 184, 150, 0.1), rgba(163, 184, 214, 0.06));
+}
+
+@media (max-width: 760px) {
+    .grammar-level-index__pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .grammar-level-index__actions {
+        width: 100%;
+    }
+
+    .grammar-level-index__search-wrap {
+        width: 100%;
+    }
+
+    .grammar-level-index__search {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .grammar-level-index__hint {
+        width: 100%;
+    }
+}
+
+/* =========================================
    文章侧边阅读进度条 (Article TOC & Scrollspy)
 ========================================= */
 .fuguang-toc {
