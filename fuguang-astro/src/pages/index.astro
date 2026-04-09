@@ -44,20 +44,62 @@ import MainFooter from '../components/MainFooter.astro';
 
                     <div class="input-group">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" placeholder="搜索单词、文章…" class="search-input" autocomplete="off">
+                        <input type="text" placeholder=" " class="search-input" autocomplete="off">
+                        <span class="search-float-label">搜索单词、文章…</span>
                         <button class="search-clear"><i class="fas fa-times"></i></button>
-                    </div>
-
-                    <div class="search-dropdown">
-                        <div class="dropdown-section">
-                            <div class="dropdown-header">
-                                <span><i class="fas fa-history"></i> 搜索历史</span>
-                                <button class="clear-btn">清除全部</button>
+                        <div class="search-dropdown">
+                            <div class="dropdown-section">
+                                <div class="dropdown-header">
+                                    <span><i class="fas fa-history"></i> 搜索历史</span>
+                                    <button class="clear-btn">清除全部</button>
+                                </div>
+                                <ul class="dropdown-list">
+                                    <li>
+                                        <a href="/search/history/desu">
+                                            <span class="dropdown-item-main">
+                                                <i class="fa-solid fa-comment-dots"></i>
+                                                <span><span lang="ja">です</span>的用法</span>
+                                            </span>
+                                            <span class="dropdown-item-meta">历史</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/search/history/n3-grammar">
+                                            <span class="dropdown-item-main">
+                                                <i class="fa-solid fa-book-open"></i>
+                                                <span>N3 文法</span>
+                                            </span>
+                                            <span class="dropdown-item-meta">历史</span>
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
-                            <ul class="dropdown-list">
-                                <li><a href="/search/history/desu"><span lang="ja">です</span>的用法</a></li>
-                                <li><a href="/search/history/n3-grammar">N3 文法</a></li>
-                            </ul>
+
+                            <div class="dropdown-section">
+                                <div class="dropdown-header">
+                                    <span><i class="fa-solid fa-wand-magic-sparkles"></i> 快捷入口</span>
+                                </div>
+                                <ul class="dropdown-list">
+                                    <li>
+                                        <a href="/grammar/n3">
+                                            <span class="dropdown-item-main">
+                                                <i class="fa-solid fa-book-open-reader"></i>
+                                                <span>N3 语法列表</span>
+                                            </span>
+                                            <span class="dropdown-item-meta">Enter</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/exams/catti">
+                                            <span class="dropdown-item-main">
+                                                <i class="fa-solid fa-certificate"></i>
+                                                <span>CATTI 考试入口</span>
+                                            </span>
+                                            <span class="dropdown-item-meta">Enter</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
