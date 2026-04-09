@@ -2,18 +2,24 @@
 import { getCollection } from 'astro:content';
 import ArticleLayout from '../../../layouts/ArticleLayout.astro';
 
+const sectionMeta: Record<string, { title: string; tag: string }> = {
+    kaoyan: { title: '考研日语', tag: '考研' },
+    gaokao: { title: '高考日语', tag: '高考' },
+    jlpt: { title: 'JLPT 考试', tag: 'JLPT' },
+};
+
 export async function getStaticPaths() {
-    return ['n1', 'n2', 'n3', 'n4', 'n5'].map((level) => ({
-        params: { level },
+    return ['kaoyan', 'gaokao', 'jlpt'].map((section) => ({
+        params: { section },
     }));
 }
 
-const allPosts = await getCollection('grammar');
-const levelParam = String(Astro.params.level ?? '').toLowerCase();
-const currentLevel = levelParam.toUpperCase();
+const allPosts = await getCollection('exams');
+const sectionParam = String(Astro.params.section ?? '').toLowerCase();
+const meta = sectionMeta[sectionParam] ?? { title: sectionParam.toUpperCase(), tag: sectionParam.toUpperCase() };
 
 const posts = allPosts
-    .filter((post) => post.data.level === currentLevel)
+    .filter((post) => post.id.toLowerCase().startsWith(`${sectionParam}/`))
     .map((post) => ({
         ...post,
         slug: post.id.replace(/\.mdx?$/, ''),
@@ -22,16 +28,16 @@ const posts = allPosts
 ---
 
 <ArticleLayout
-    title={`${currentLevel} 语法列表`}
-    mainHeading={`${currentLevel} 语法列表`}
-    tag={`${currentLevel}语法`}
-    breadcrumbSegments={[{ label: '语法文库', href: '/grammar' }]}
+    title={`${meta.title} 列表`}
+    mainHeading={`${meta.title} 列表`}
+    tag={meta.tag}
+    breadcrumbSegments={[{ label: '考试题库', href: '/exams' }]}
     enableScrollspy={false}
 >
     <section class="grammar-level-index" data-page-size="10">
         <div class="grammar-level-index__toolbar">
             <div class="grammar-level-index__actions">
-                <div class="grammar-level-index__search-wrap" id="grammar-search-wrap">
+                <div class="grammar-level-index__search-wrap">
                     <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
                     <input
                         id="grammar-search-input"
@@ -48,11 +54,9 @@ const posts = allPosts
             </div>
         </div>
 
-        <div class="grammar-level-index__pagination" id="grammar-pagination">
-            <div class="grammar-level-index__pager-controls" id="grammar-pager-controls">
-                <button id="grammar-show-all-btn" class="grammar-level-index__btn" type="button">
-                    显示全部
-                </button>
+        <div class="grammar-level-index__pagination">
+            <div class="grammar-level-index__pager-controls">
+                <button id="grammar-show-all-btn" class="grammar-level-index__btn" type="button">显示全部</button>
                 <button id="grammar-prev-btn" class="grammar-level-index__btn" type="button">上一页</button>
                 <span id="grammar-page-indicator" class="grammar-level-index__page-indicator"></span>
                 <button id="grammar-next-btn" class="grammar-level-index__btn" type="button">下一页</button>
@@ -62,17 +66,12 @@ const posts = allPosts
         <ul class="grammar-level-index__list" id="grammar-level-list">
             {
                 posts.map((post, idx) => (
-                    <li
-                        class="grammar-level-index__item"
-                        data-index={idx}
-                        data-title={post.data.title.toLowerCase()}
-                        data-slug={post.slug}
-                    >
-                        <a href={`/grammar/${post.slug}`} class="grammar-level-index__link">
+                    <li class="grammar-level-index__item" data-index={idx} data-title={post.data.title.toLowerCase()}>
+                        <a href={`/exams/${post.slug}`} class="grammar-level-index__link">
                             <span class="grammar-level-index__line"></span>
                             <span class="grammar-level-index__title">{post.data.title}</span>
                             <span class="grammar-level-index__icon" aria-hidden="true">
-                                <i class="fa-solid fa-book-open"></i>
+                                <i class="fa-solid fa-list-check"></i>
                             </span>
                         </a>
                     </li>
@@ -92,54 +91,22 @@ const posts = allPosts
                     const nextBtn = document.getElementById('grammar-next-btn') as HTMLButtonElement | null;
                     const showAllBtn = document.getElementById('grammar-show-all-btn') as HTMLButtonElement | null;
                     const pageIndicator = document.getElementById('grammar-page-indicator') as HTMLElement | null;
-                    const pagerControls = document.getElementById('grammar-pager-controls') as HTMLElement | null;
-                    const searchWrap = document.getElementById('grammar-search-wrap') as HTMLElement | null;
+                    const pagerControls = document.querySelector('.grammar-level-index__pager-controls') as HTMLElement | null;
                     const searchInput = document.getElementById('grammar-search-input') as HTMLInputElement | null;
                     const searchHint = document.getElementById('grammar-search-hint') as HTMLElement | null;
                     const searchPosition = document.getElementById('grammar-search-position') as HTMLElement | null;
-                    const navbarTopicGroup = document.getElementById('navbar-topic-group') as HTMLElement | null;
-                    const navbarRight = document.querySelector('.fuguang-navbar .nav-right') as HTMLElement | null;
-                    if (!list || !prevBtn || !nextBtn || !showAllBtn || !pageIndicator || !pagerControls || !searchWrap || !searchInput || !searchHint || !searchPosition) return;
+                    if (!list || !prevBtn || !nextBtn || !showAllBtn || !pageIndicator || !pagerControls || !searchInput || !searchHint || !searchPosition) return;
 
                     const cards = Array.from(list.querySelectorAll<HTMLElement>('.grammar-level-index__item'));
                     if (cards.length === 0) return;
-
-                    const pageContainer = list.closest('.grammar-level-index') as HTMLElement | null;
-                    const pageSizeRaw = Number(pageContainer?.dataset.pageSize ?? 10);
-                    const pageSize = Number.isFinite(pageSizeRaw) && pageSizeRaw > 0 ? pageSizeRaw : 10;
+                    const pageSize = 10;
                     const pageCount = Math.max(1, Math.ceil(cards.length / pageSize));
-
                     let currentPage = 1;
                     let showAllMode = false;
                     let currentKeyword = '';
                     let matchCursor = -1;
-                    let currentMatchedLength = 0;
-
-                    let navbarSearchChip = document.getElementById('grammar-search-navbar-chip') as HTMLElement | null;
-                    if (!navbarSearchChip && (navbarTopicGroup || navbarRight)) {
-                        navbarSearchChip = document.createElement('span');
-                        navbarSearchChip.id = 'grammar-search-navbar-chip';
-                        navbarSearchChip.className = 'grammar-search-navbar-chip';
-                        navbarSearchChip.setAttribute('aria-live', 'polite');
-                        if (navbarTopicGroup) {
-                            navbarSearchChip.classList.add('grammar-search-navbar-chip--topic');
-                            navbarTopicGroup.append(navbarSearchChip);
-                        } else if (navbarRight) {
-                            navbarSearchChip.classList.add('grammar-search-navbar-chip--right');
-                            navbarRight.prepend(navbarSearchChip);
-                        }
-                    }
-
                     const getMatchedCards = () => cards.filter((card) => (card.dataset.title || '').includes(currentKeyword));
-                    const updateNavbarSearchMirror = () => {
-                        if (!navbarSearchChip) return;
-                        const query = searchInput.value.trim();
-                        const searchRect = searchWrap.getBoundingClientRect();
-                        const isSearchHidden = searchRect.bottom <= 0 || searchRect.top >= window.innerHeight;
-                        const shouldShow = Boolean(query) && currentMatchedLength > 0 && isSearchHidden;
-                        navbarSearchChip.classList.toggle('is-visible', shouldShow);
-                        navbarSearchChip.textContent = shouldShow ? `搜索：${query} (${currentMatchedLength})` : '';
-                    };
+
                     const updatePosition = (matchedLength: number) => {
                         if (!currentKeyword || matchedLength === 0 || matchCursor < 0) {
                             searchPosition.textContent = '';
@@ -153,35 +120,26 @@ const posts = allPosts
                         if (!currentKeyword) {
                             searchHint.textContent = '';
                             searchPosition.textContent = '';
-                            currentMatchedLength = 0;
-                            updateNavbarSearchMirror();
                             return;
                         }
                         const matched = getMatchedCards();
-                        currentMatchedLength = matched.length;
                         matched.forEach((card) => card.classList.add('is-search-hit'));
-                        searchHint.textContent = matched.length > 0
-                            ? `匹配 ${matched.length} 条，按 Enter 顺序跳转。`
-                            : '未找到匹配标题。';
+                        searchHint.textContent = matched.length > 0 ? `匹配 ${matched.length} 条，按 Enter 顺序跳转。` : '未找到匹配标题。';
                         updatePosition(matched.length);
-                        updateNavbarSearchMirror();
                     };
 
                     const renderList = () => {
                         cards.forEach((card, idx) => {
                             const start = (currentPage - 1) * pageSize;
                             const end = start + pageSize;
-                            const shouldShow = showAllMode || (idx >= start && idx < end);
-                            card.style.display = shouldShow ? '' : 'none';
+                            card.style.display = showAllMode || (idx >= start && idx < end) ? '' : 'none';
                         });
                         pageIndicator.textContent = showAllMode ? `共 ${cards.length} 条` : `${currentPage} / ${pageCount}`;
                         prevBtn.disabled = showAllMode || currentPage <= 1;
                         nextBtn.disabled = showAllMode || currentPage >= pageCount;
-                        pagerControls.style.display = 'inline-flex';
                         prevBtn.style.display = showAllMode ? 'none' : '';
                         nextBtn.style.display = showAllMode ? 'none' : '';
                         pageIndicator.style.display = showAllMode ? 'none' : '';
-                        updateNavbarSearchMirror();
                     };
 
                     const ensureCardVisible = (card: HTMLElement) => {
@@ -197,25 +155,21 @@ const posts = allPosts
                         currentPage -= 1;
                         renderList();
                     });
-
                     nextBtn.addEventListener('click', () => {
                         if (currentPage >= pageCount || showAllMode) return;
                         currentPage += 1;
                         renderList();
                     });
-
                     showAllBtn.addEventListener('click', () => {
                         showAllMode = !showAllMode;
                         showAllBtn.textContent = showAllMode ? '恢复分页' : '显示全部';
                         renderList();
                     });
-
                     searchInput.addEventListener('input', () => {
                         currentKeyword = searchInput.value.trim().toLowerCase();
                         matchCursor = -1;
                         refreshHighlight();
                     });
-
                     searchInput.addEventListener('keydown', (event) => {
                         if (event.key !== 'Enter') return;
                         event.preventDefault();
@@ -229,10 +183,6 @@ const posts = allPosts
                         ensureCardVisible(target);
                         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     });
-
-                    window.addEventListener('scroll', updateNavbarSearchMirror, { passive: true });
-                    window.addEventListener('resize', updateNavbarSearchMirror);
-
                     renderList();
                 });
             </script>

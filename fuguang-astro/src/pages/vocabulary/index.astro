@@ -1,0 +1,39 @@
+---
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+const levels = [
+    { label: 'N5 单词', href: '/vocabulary/n5', icon: 'fa-solid fa-language', desc: '初级' },
+    { label: 'N4 单词', href: '/vocabulary/n4', icon: 'fa-solid fa-language', desc: '初中级' },
+    { label: 'N3 单词', href: '/vocabulary/n3', icon: 'fa-solid fa-language', desc: '中级' },
+    { label: 'N2 单词', href: '/vocabulary/n2', icon: 'fa-solid fa-language', desc: '中高级' },
+    { label: 'N1 单词', href: '/vocabulary/n1', icon: 'fa-solid fa-language', desc: '高级' },
+];
+---
+
+<ArticleLayout
+    title="单词文库"
+    mainHeading="单词文库"
+    tag="日语词汇"
+    breadcrumbSegments={[{ label: '单词文库' }]}
+    showBreadcrumbCurrent={false}
+    enableScrollspy={false}
+>
+    <section class="grammar-level-bento" aria-label="单词级别导航">
+        {
+            levels.map((item) => (
+                <a href={item.href} class="grammar-level-bento__item">
+                    <span class="grammar-level-bento__icon" aria-hidden="true">
+                        <i class={item.icon}></i>
+                    </span>
+                    <span class="grammar-level-bento__content">
+                        <span class="grammar-level-bento__title">{item.label}</span>
+                        <span class="grammar-level-bento__desc">{item.desc}</span>
+                    </span>
+                    <span class="grammar-level-bento__arrow" aria-hidden="true">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </a>
+            ))
+        }
+    </section>
+</ArticleLayout>

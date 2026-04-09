@@ -26,6 +26,18 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+const examSection = entry.id.split('/')[0] || 'exams';
+const examBranch = entry.id.split('/')[1] || '';
+const sectionTitleMap: Record<string, string> = {
+    catti: 'CATTI 考试',
+    kaoyan: '考研日语',
+    gaokao: '高考日语',
+    jlpt: 'JLPT 考试',
+};
+const cattiBranchTitleMap: Record<string, string> = {
+    translation: 'CATTI 日语笔译',
+    interpretation: 'CATTI 日语口译',
+};
 
 const mdxComponents = {
     'directive-accent': CalloutAccent,
@@ -49,6 +61,13 @@ const mdxComponents = {
     tag={entry.data.tag}
     date={entry.data.date}
     mainHeading={entry.data.mainHeading}
+    breadcrumbSegments={[
+        { label: '考试题库', href: '/exams' },
+        { label: sectionTitleMap[examSection] || examSection, href: `/exams/${examSection}` },
+        ...(examSection === 'catti' && cattiBranchTitleMap[examBranch]
+            ? [{ label: cattiBranchTitleMap[examBranch], href: `/exams/catti/${examBranch}` }]
+            : []),
+    ]}
 >
     <Content components={mdxComponents} />
 </ArticleLayout>

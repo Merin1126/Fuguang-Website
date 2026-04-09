@@ -1,0 +1,38 @@
+---
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+const sections = [
+    { label: '会议日语', href: '/business/meeting', icon: 'fa-solid fa-people-group', desc: '会议沟通' },
+    { label: '接待日语', href: '/business/reception', icon: 'fa-solid fa-handshake', desc: '来访接待' },
+    { label: '宴会日语', href: '/business/banquet', icon: 'fa-solid fa-utensils', desc: '商务宴会' },
+    { label: '汽车日语', href: '/business/auto', icon: 'fa-solid fa-car-side', desc: '行业专项' },
+];
+---
+
+<ArticleLayout
+    title="工作日语"
+    mainHeading="工作日语"
+    tag="商务日语"
+    breadcrumbSegments={[{ label: '工作日语' }]}
+    showBreadcrumbCurrent={false}
+    enableScrollspy={false}
+>
+    <section class="grammar-level-bento" aria-label="工作日语场景导航">
+        {
+            sections.map((item) => (
+                <a href={item.href} class="grammar-level-bento__item">
+                    <span class="grammar-level-bento__icon" aria-hidden="true">
+                        <i class={item.icon}></i>
+                    </span>
+                    <span class="grammar-level-bento__content">
+                        <span class="grammar-level-bento__title">{item.label}</span>
+                        <span class="grammar-level-bento__desc">{item.desc}</span>
+                    </span>
+                    <span class="grammar-level-bento__arrow" aria-hidden="true">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </a>
+            ))
+        }
+    </section>
+</ArticleLayout>

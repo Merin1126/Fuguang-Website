@@ -1,0 +1,28 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+export async function getStaticPaths() {
+    const entries = await getCollection('vocabulary');
+    return entries.map((entry) => ({
+        params: { slug: entry.id.replace(/\.mdx?$/, '') },
+        props: { entry },
+    }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const level = entry.data.level;
+const vocabularyBreadcrumb: { label: string; href?: string }[] = [{ label: '单词文库', href: '/vocabulary' }];
+if (level) {
+    vocabularyBreadcrumb.push({
+        label: `${level} 单词列表`,
+        href: `/vocabulary/${level.toLowerCase()}`,
+    });
+}
+---
+
+<ArticleLayout {...entry.data} breadcrumbSegments={vocabularyBreadcrumb}>
+    <Content />
+</ArticleLayout>

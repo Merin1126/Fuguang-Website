@@ -1,0 +1,46 @@
+---
+import ArticleLayout from '../../../layouts/ArticleLayout.astro';
+
+const branches = [
+    {
+        label: 'CATTI 日语笔译',
+        href: '/exams/catti/translation',
+        icon: 'fa-solid fa-file-pen',
+        desc: 'Translation',
+    },
+    {
+        label: 'CATTI 日语口译',
+        href: '/exams/catti/interpretation',
+        icon: 'fa-solid fa-microphone-lines',
+        desc: 'Interpretation',
+    },
+];
+---
+
+<ArticleLayout
+    title="CATTI 考试"
+    mainHeading="CATTI 考试"
+    tag="CATTI"
+    breadcrumbSegments={[{ label: '考试题库', href: '/exams' }, { label: 'CATTI 考试' }]}
+    showBreadcrumbCurrent={false}
+    enableScrollspy={false}
+>
+    <section class="grammar-level-bento" aria-label="CATTI 分类导航">
+        {
+            branches.map((item) => (
+                <a href={item.href} class="grammar-level-bento__item">
+                    <span class="grammar-level-bento__icon" aria-hidden="true">
+                        <i class={item.icon}></i>
+                    </span>
+                    <span class="grammar-level-bento__content">
+                        <span class="grammar-level-bento__title">{item.label}</span>
+                        <span class="grammar-level-bento__desc">{item.desc}</span>
+                    </span>
+                    <span class="grammar-level-bento__arrow" aria-hidden="true">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </a>
+            ))
+        }
+    </section>
+</ArticleLayout>

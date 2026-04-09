@@ -1,0 +1,26 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+export async function getStaticPaths() {
+    const entries = await getCollection('business');
+    return entries.map((entry) => ({
+        params: { slug: entry.id.replace(/\.mdx?$/, '') },
+        props: { entry },
+    }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const section = entry.id.split('/')[0] || 'business';
+---
+
+<ArticleLayout
+    {...entry.data}
+    breadcrumbSegments={[
+        { label: '工作日语', href: '/business' },
+        { label: `${section} 列表`, href: `/business/${section}` },
+    ]}
+>
+    <Content />
+</ArticleLayout>

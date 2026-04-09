@@ -1,0 +1,38 @@
+---
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+const sections = [
+    { label: 'CATTI 考试', href: '/exams/catti', icon: 'fa-solid fa-certificate', desc: '翻译与口译' },
+    { label: '考研日语', href: '/exams/kaoyan', icon: 'fa-solid fa-user-graduate', desc: '研究生考试' },
+    { label: '高考日语', href: '/exams/gaokao', icon: 'fa-solid fa-school', desc: '高中升学考试' },
+    { label: 'JLPT 考试', href: '/exams/jlpt', icon: 'fa-solid fa-file-circle-check', desc: '能力考训练' },
+];
+---
+
+<ArticleLayout
+    title="考试题库"
+    mainHeading="考试题库"
+    tag="日语考试"
+    breadcrumbSegments={[{ label: '考试题库' }]}
+    showBreadcrumbCurrent={false}
+    enableScrollspy={false}
+>
+    <section class="grammar-level-bento" aria-label="考试频道导航">
+        {
+            sections.map((item) => (
+                <a href={item.href} class="grammar-level-bento__item">
+                    <span class="grammar-level-bento__icon" aria-hidden="true">
+                        <i class={item.icon}></i>
+                    </span>
+                    <span class="grammar-level-bento__content">
+                        <span class="grammar-level-bento__title">{item.label}</span>
+                        <span class="grammar-level-bento__desc">{item.desc}</span>
+                    </span>
+                    <span class="grammar-level-bento__arrow" aria-hidden="true">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </a>
+            ))
+        }
+    </section>
+</ArticleLayout>
