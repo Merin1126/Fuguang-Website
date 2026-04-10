@@ -141,7 +141,14 @@ import ActionModal from '../components/ActionModal.astro';
         const signupEmailInput = document.querySelector<HTMLInputElement>('input[name="registerEmail"]');
         const signupEmailConfirmInput = document.querySelector<HTMLInputElement>('input[name="registerEmailConfirm"]');
 
-        type ShowActionModalFn = (title: string, desc: string, btnText: string, onConfirm?: () => void) => void;
+        type ModalVariant = 'success' | 'error';
+        type ShowActionModalFn = (
+            title: string,
+            desc: string,
+            btnText: string,
+            onConfirm?: () => void,
+            options?: { variant?: ModalVariant }
+        ) => void;
         const showActionModal = (window as unknown as { showActionModal: ShowActionModalFn }).showActionModal;
 
         function formatApiDetail(detail: unknown): string {
@@ -158,6 +165,48 @@ import ActionModal from '../components/ActionModal.astro';
                     .join('；');
             }
             return String(detail);
+        }
+
+        /** 将 FastAPI/Pydantic 422 等英文校验提示转为中文（如 Field required） */
+        function humanizeValidationErrors(detail: unknown, form: 'login' | 'register'): string {
+            const userFieldLabel = form === 'login' ? '邮箱' : '用户账号';
+            const fieldLabels: Record<string, string> = {
+                username: userFieldLabel,
+                password: '密码',
+                email: '邮箱',
+                nickname: '昵称',
+            };
+
+            if (typeof detail === 'string') {
+                if (/field required/i.test(detail)) {
+                    return form === 'login' ? '请填写邮箱与密码' : '请填写必填信息';
+                }
+                return detail;
+            }
+            if (!Array.isArray(detail)) return formatApiDetail(detail);
+
+            const parts: string[] = [];
+            for (const item of detail) {
+                if (!item || typeof item !== 'object') continue;
+                const rec = item as { msg?: unknown; loc?: unknown[] };
+                const msg = String(rec.msg ?? '');
+                const loc = rec.loc;
+                const last = Array.isArray(loc) ? String(loc[loc.length - 1]) : '';
+                const label = fieldLabels[last] || last;
+                if (/field required/i.test(msg)) {
+                    parts.push(label ? `请填写${label}` : '请填写必填项');
+                } else {
+                    parts.push(msg);
+                }
+            }
+            return parts.length ? [...new Set(parts)].join('；') : formatApiDetail(detail);
+        }
+
+        function describeHttpError(response: Response, detail: unknown, form: 'login' | 'register'): string {
+            if (response.status === 422) {
+                return humanizeValidationErrors(detail, form);
+            }
+            return formatApiDetail(detail);
         }
 
         let mode: 'signin' | 'signup' = 'signin';
@@ -234,14 +283,19 @@ import ActionModal from '../components/ActionModal.astro';
 
         // --- 1. 登录逻辑 (发往大堂对暗号，获取 VIP 卡) ---
         signinForm?.addEventListener('submit', async (e) => {
-            e.preventDefault(); // 阻止浏览器默认的页面刷新
+            e.preventDefault();
 
-            const emailInput = signinForm.querySelector('input[name="email"]');
-            const passwordInput = signinForm.querySelector('input[name="password"]');
-            
-            // 组装 OAuth2 标准要求的 Form Data
+            if (!signinForm.checkValidity()) {
+                signinForm.reportValidity();
+                return;
+            }
+
+            const emailInput = signinForm.querySelector<HTMLInputElement>('input[name="email"]');
+            const passwordInput = signinForm.querySelector<HTMLInputElement>('input[name="password"]');
+            if (!emailInput || !passwordInput) return;
+
             const formData = new URLSearchParams();
-            formData.append('username', emailInput.value); // 注意：FastAPI 要求这里的 key 必须叫 username
+            formData.append('username', emailInput.value);
             formData.append('password', passwordInput.value);
 
             try {
@@ -255,11 +309,11 @@ import ActionModal from '../components/ActionModal.astro';
                     let desc = `服务器返回 ${response.status}`;
                     try {
                         const errorData = (await response.json()) as { detail?: unknown };
-                        desc = formatApiDetail(errorData.detail);
+                        desc = describeHttpError(response, errorData.detail, 'login');
                     } catch {
                         /* body 非 JSON */
                     }
-                    showActionModal('登录失败', desc, '知道了');
+                    showActionModal('登录失败', desc, '我再试试', undefined, { variant: 'error' });
                     return;
                 }
 
@@ -271,10 +325,11 @@ import ActionModal from '../components/ActionModal.astro';
                 showActionModal('登录成功', '欢迎回来！', '继续', () => {
                     window.location.reload();
                 });
-
             } catch (error) {
                 console.error('请求后端出错:', error);
-                showActionModal('无法连接服务器', '请检查后端服务是否已启动，或稍后再试。', '知道了');
+                showActionModal('无法连接服务器', '请检查后端服务是否已启动，或稍后再试。', '我再试试', undefined, {
+                    variant: 'error',
+                });
             }
         });
 
@@ -289,16 +344,26 @@ import ActionModal from '../components/ActionModal.astro';
                 return;
             }
 
-            // 提取输入框的值
+            if (
+                !signupEmailInput ||
+                !signupUsernameInput ||
+                !signupNicknameInput ||
+                !signupPasswordInput
+            ) {
+                showActionModal('注册失败', '页面表单项异常，请刷新后重试。', '我再试试', undefined, {
+                    variant: 'error',
+                });
+                return;
+            }
+
             const payload = {
                 email: signupEmailInput.value,
                 username: signupUsernameInput.value,
                 nickname: signupNicknameInput.value,
-                password: signupPasswordInput.value
+                password: signupPasswordInput.value,
             };
 
             try {
-                // 注册使用 JSON 格式
                 const response = await fetch('http://127.0.0.1:8000/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -309,29 +374,30 @@ import ActionModal from '../components/ActionModal.astro';
                     let desc = '注册失败，请检查输入格式。';
                     try {
                         const errorData = (await response.json()) as { detail?: unknown };
-                        desc = formatApiDetail(errorData.detail);
+                        desc = describeHttpError(response, errorData.detail, 'register');
                     } catch {
                         desc = `服务器返回 ${response.status}`;
                     }
-                    showActionModal('注册失败', desc, '知道了');
+                    showActionModal('注册失败', desc, '我再试试', undefined, { variant: 'error' });
                     return;
                 }
 
                 showActionModal(
                     '注册成功！',
-                    '您的扶光账号已创建完毕，欢迎加入我们的世界。',
+                    '您的扶光冒险者ID已登记在册，欢迎加入我们的世界。',
                     '去登录',
                     () => {
                         mode = 'signin';
                         syncUi();
-                        const signinEmailInput = signinForm?.querySelector('input[name="email"]');
-                        if (signinEmailInput) (signinEmailInput as HTMLInputElement).value = payload.email;
+                        const signinEmailInput = signinForm?.querySelector<HTMLInputElement>('input[name="email"]');
+                        if (signinEmailInput) signinEmailInput.value = payload.email;
                     }
                 );
-
             } catch (error) {
-                console.error('请求后端出错:', error);
-                showActionModal('无法连接服务器', '请检查后端服务是否已启动，或稍后再试。', '知道了');
+                console.error('后端出错:', error);
+                showActionModal('无法连接服务器', '请检查后端服务是否已启动，或稍后再试。', '知道了', undefined, {
+                    variant: 'error',
+                });
             }
         });
     </script>

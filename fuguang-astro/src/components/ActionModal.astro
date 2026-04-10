@@ -5,12 +5,12 @@
 <div id="fuguang-action-modal" class="modal-overlay" aria-hidden="true">
     <div class="modal-container">
         <div class="modal-card">
-            <div id="confetti-canvas" aria-hidden="true"></div>
+            <canvas id="confetti-canvas" aria-hidden="true"></canvas>
 
             <button class="modal-close-btn" id="modal-close" aria-label="关闭">&times;</button>
 
-            <div class="modal-banner">
-                <div class="banner-icon">🎉</div>
+            <div class="modal-banner" id="modal-banner">
+                <div class="banner-icon" id="modal-banner-icon" aria-hidden="true">🎉</div>
             </div>
 
             <div class="modal-content">
@@ -31,9 +31,10 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: rgba(15, 15, 18, 0.7);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+        /* 略加深底色，替代全屏 backdrop-filter，避免与动画叠加时严重掉帧 */
+        background: rgba(15, 15, 18, 0.88);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
         z-index: 10000;
         display: flex;
         align-items: center;
@@ -93,9 +94,41 @@
         justify-content: center;
         position: relative;
         z-index: 1;
+        overflow: hidden;
+    }
+
+    /* 成功态：背景层大字拆两段，四角排布，中间留给 emoji（错误态不展示） */
+    #fuguang-action-modal:not(.is-error) .modal-banner::before,
+    #fuguang-action-modal:not(.is-error) .modal-banner::after {
+        position: absolute;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: rgba(255, 255, 255, 0.11);
+        white-space: nowrap;
+        pointer-events: none;
+        user-select: none;
+        z-index: 0;
+        line-height: 1.2;
+    }
+
+    #fuguang-action-modal:not(.is-error) .modal-banner::before {
+        content: "欢迎进入";
+        top: 30px;
+        left: 30px;
+        font-size: clamp(30px, 3.6vw, 40px);
+    }
+
+    #fuguang-action-modal:not(.is-error) .modal-banner::after {
+        content: "扶光冒险者公会";
+        right: 20px;
+        bottom: 10px;
+        font-size: clamp(30px, 3.4vw, 19px);
+        text-align: right;
     }
 
     .banner-icon {
+        position: relative;
+        z-index: 1;
         font-size: 64px;
         filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
         animation: float 3s ease-in-out infinite;
@@ -171,105 +204,186 @@
         opacity: 0.9;
     }
 
-    /* =========================================
-       🎉 纯原生 CSS 彩带物理系统
-    ========================================= */
-    /* 填满 .modal-card 内部，由卡片 overflow 裁剪圆角内飘落 */
+    /* 错误态：仅横幅略偏暖色；图标与成功态共用 .banner-icon 的 float 动画 */
+    #fuguang-action-modal.is-error .modal-banner {
+        background: linear-gradient(135deg, rgba(200, 100, 100, 0.18), rgba(60, 30, 30, 0.22));
+    }
+
+    /* 单 canvas + rAF 绘制，避免大量 DOM/CSS 动画与毛玻璃抢 GPU */
     #fuguang-action-modal #confetti-canvas {
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
+        display: block;
         pointer-events: none;
-        /* 必须高于 banner / content，否则会被不透明背景完全挡住 */
         z-index: 5;
-        overflow: hidden;
-    }
-
-    .confetti-piece {
-        position: absolute;
-        width: 10px;
-        height: 20px;
-        background: #ffd300;
-        top: -20px;
-        opacity: 0;
-    }
-
-    /*
-     * 不能用 container-type:size 求 cqh：size containment 会让卡片高度无视子元素而塌陷成一条线。
-     * 下落距离用固定值，略大于典型卡片高度，由 overflow:hidden 裁剪。
-     */
-    @keyframes makeItRainInCard {
-        0% { opacity: 1; transform: translateY(0) rotateZ(0deg) rotateX(0deg); }
-        100% {
-            opacity: 0;
-            transform: translateY(32rem) rotateZ(360deg) rotateX(360deg);
-        }
     }
 </style>
 
 <script is:inline>
-    // 将方法挂载到 window 上，实现全局调用
-    window.showActionModal = function(title, desc, btnText, onConfirm) {
-        const modal = document.getElementById('fuguang-action-modal');
-        const titleEl = document.getElementById('modal-title');
-        const descEl = document.getElementById('modal-desc');
-        const ctaBtn = document.getElementById('modal-cta');
-        const closeBtn = document.getElementById('modal-close');
-        const canvas = document.getElementById('confetti-canvas');
+    var __fuguangConfettiRaf = 0;
 
-        // 设置文案
+    function stopConfettiAnimation() {
+        if (__fuguangConfettiRaf) {
+            cancelAnimationFrame(__fuguangConfettiRaf);
+            __fuguangConfettiRaf = 0;
+        }
+    }
+
+    function clearConfettiCanvas(canvas) {
+        if (!canvas || canvas.tagName !== 'CANVAS') return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    /**
+     * 单 canvas + rAF：只有一块位图在动，避免几十个 div 的 CSS 动画与全屏模糊叠加卡顿。
+     */
+    function fireConfetti(canvas) {
+        stopConfettiAnimation();
+        clearConfettiCanvas(canvas);
+
+        var colors = ['#A3B8D6', '#d4b896', '#ffffff', '#ffd300', '#ff6b6b'];
+        var COUNT = 28;
+        var ctx =
+            canvas.getContext('2d', { alpha: true, desynchronized: true }) ||
+            canvas.getContext('2d');
+        if (!ctx) return;
+
+        var rect = canvas.getBoundingClientRect();
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var bw = Math.max(1, Math.round(rect.width * dpr));
+        var bh = Math.max(1, Math.round(rect.height * dpr));
+        canvas.width = bw;
+        canvas.height = bh;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        var cssW = rect.width;
+        var cssH = rect.height;
+        var particles = [];
+        var i;
+        for (i = 0; i < COUNT; i++) {
+            particles.push({
+                x: Math.random() * cssW,
+                y: -24 - Math.random() * 72,
+                w: 5 + Math.random() * 6,
+                h: 8 + Math.random() * 10,
+                vy: 1.4 + Math.random() * 2.2,
+                vx: -0.5 + Math.random() * 1,
+                rot: Math.random() * 6.28318,
+                vr: -0.12 + Math.random() * 0.24,
+                color: colors[(Math.random() * colors.length) | 0]
+            });
+        }
+
+        var frame = 0;
+        var maxFrames = 320;
+
+        function tick() {
+            frame++;
+            rect = canvas.getBoundingClientRect();
+            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            bw = Math.max(1, Math.round(rect.width * dpr));
+            bh = Math.max(1, Math.round(rect.height * dpr));
+            if (canvas.width !== bw || canvas.height !== bh) {
+                canvas.width = bw;
+                canvas.height = bh;
+            }
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            cssW = rect.width;
+            cssH = rect.height;
+
+            ctx.clearRect(0, 0, cssW + 2, cssH + 2);
+
+            var alive = 0;
+            var j;
+            var p;
+            var fade;
+            for (j = 0; j < particles.length; j++) {
+                p = particles[j];
+                p.vy += 0.045;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.rot += p.vr;
+                if (p.y < cssH + 48) {
+                    alive++;
+                    fade = Math.max(0, Math.min(1, 1 - (p.y - cssH * 0.25) / (cssH * 1.15)));
+                    ctx.save();
+                    ctx.globalAlpha = fade;
+                    ctx.fillStyle = p.color;
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rot);
+                    ctx.fillRect(-p.w * 0.5, -p.h * 0.5, p.w, p.h);
+                    ctx.restore();
+                }
+            }
+
+            if (alive > 0 && frame < maxFrames) {
+                __fuguangConfettiRaf = requestAnimationFrame(tick);
+            } else {
+                __fuguangConfettiRaf = 0;
+            }
+        }
+
+        __fuguangConfettiRaf = requestAnimationFrame(tick);
+    }
+
+    /**
+     * @param {{ variant?: 'success' | 'error' }} [options] — error：无彩带、横幅为 ❌
+     */
+    window.showActionModal = function(title, desc, btnText, onConfirm, options) {
+        var modal = document.getElementById('fuguang-action-modal');
+        var titleEl = document.getElementById('modal-title');
+        var descEl = document.getElementById('modal-desc');
+        var ctaBtn = document.getElementById('modal-cta');
+        var closeBtn = document.getElementById('modal-close');
+        var canvas = document.getElementById('confetti-canvas');
+        var bannerIcon = document.getElementById('modal-banner-icon');
+
+        var variant = options && options.variant === 'error' ? 'error' : 'success';
+
         titleEl.textContent = title;
         descEl.textContent = desc;
         ctaBtn.textContent = btnText;
 
-        // 清除旧的事件监听，防止多次绑定
+        if (bannerIcon) {
+            bannerIcon.textContent = variant === 'error' ? '❌' : '🎉';
+        }
+
+        if (variant === 'error') {
+            modal.classList.add('is-error');
+            stopConfettiAnimation();
+            clearConfettiCanvas(canvas);
+        } else {
+            modal.classList.remove('is-error');
+        }
+
         ctaBtn.onclick = null;
         closeBtn.onclick = null;
 
-        // 绑定新事件
-        const closeModal = () => {
+        var closeModal = function() {
             modal.classList.remove('is-open');
-            if (canvas) canvas.innerHTML = '';
+            modal.classList.remove('is-error');
+            stopConfettiAnimation();
+            clearConfettiCanvas(canvas);
         };
 
         closeBtn.onclick = closeModal;
-        ctaBtn.onclick = () => {
-            if(onConfirm) onConfirm();
+        ctaBtn.onclick = function() {
+            if (onConfirm) onConfirm();
             closeModal();
         };
 
-        // 先打开遮罩再播彩带：否则 visibility:hidden 时动画已在后台跑完，肉眼看不到
         modal.classList.add('is-open');
-        if (canvas) {
-            requestAnimationFrame(() => fireConfetti(canvas));
+        if (variant === 'success' && canvas && canvas.tagName === 'CANVAS') {
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    fireConfetti(canvas);
+                });
+            });
         }
     };
-
-    // 物理彩带生成器
-    function fireConfetti(canvas) {
-        canvas.innerHTML = ''; // 清空之前的
-        const colors = ['#A3B8D6', '#d4b896', '#ffffff', '#ffd300', '#ff6b6b'];
-        
-        for (let i = 0; i < 20; i++) {
-            const piece = document.createElement('div');
-            piece.className = 'confetti-piece';
-            // 随机颜色
-            piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-            // 随机水平位置
-            piece.style.left = Math.random() * 100 + '%';
-            // 随机下落延迟（制造层次感）
-            piece.style.animationDelay = Math.random() * 1 + 's';
-            // 随机下落速度
-            piece.style.animationDuration = Math.random() * 2 + 3 + 's';
-            // 随机大小
-            piece.style.transform = `scale(${Math.random() * 0.8 + 0.5})`;
-            
-            piece.style.animationName = 'makeItRainInCard';
-            piece.style.animationTimingFunction = 'linear';
-            piece.style.animationFillMode = 'forwards';
-
-            canvas.appendChild(piece);
-        }
-    }
 </script>
