@@ -4,11 +4,11 @@
 
 <div id="fuguang-action-modal" class="modal-overlay" aria-hidden="true">
     <div class="modal-container">
-        <div id="confetti-canvas"></div>
-
         <div class="modal-card">
+            <div id="confetti-canvas" aria-hidden="true"></div>
+
             <button class="modal-close-btn" id="modal-close" aria-label="关闭">&times;</button>
-            
+
             <div class="modal-banner">
                 <div class="banner-icon">🎉</div>
             </div>
@@ -56,14 +56,24 @@
         opacity: 1;
     }
 
+    /*
+     * 中间层必须给出明确宽度：否则在 flex 居中下会按 min-content 收缩，
+     * 子元素 width: 90% 会相对「极窄的父级」计算，整卡会变成一条竖条。
+     */
+    .modal-container {
+        position: relative;
+        box-sizing: border-box;
+        width: min(480px, calc(100vw - 2rem));
+        flex-shrink: 0;
+    }
+
     /* 弹窗卡片本体 */
     .modal-card {
         position: relative;
-        width: 90%;
-        max-width: 420px;
+        width: 100%;
         background: var(--bg-card, #2a2a2a);
         border-radius: 20px;
-        overflow: hidden; /* 保证顶部的 banner 贴合圆角 */
+        overflow: hidden; /* 圆角裁剪 + 彩带「笼子」 */
         box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
         
         /* 进场动画初始状态 */
@@ -82,6 +92,7 @@
         align-items: center;
         justify-content: center;
         position: relative;
+        z-index: 1;
     }
 
     .banner-icon {
@@ -122,6 +133,8 @@
 
     /* 内容区 */
     .modal-content {
+        position: relative;
+        z-index: 1;
         padding: 32px;
         text-align: center;
     }
@@ -161,14 +174,15 @@
     /* =========================================
        🎉 纯原生 CSS 彩带物理系统
     ========================================= */
-    #confetti-canvas {
+    /* 填满 .modal-card 内部，由卡片 overflow 裁剪圆角内飘落 */
+    #fuguang-action-modal #confetti-canvas {
         position: absolute;
-        top: 0;
-        left: 0;
+        inset: 0;
         width: 100%;
         height: 100%;
         pointer-events: none;
-        z-index: 1;
+        /* 必须高于 banner / content，否则会被不透明背景完全挡住 */
+        z-index: 5;
         overflow: hidden;
     }
 
@@ -181,9 +195,16 @@
         opacity: 0;
     }
 
-    @keyframes makeItRain {
+    /*
+     * 不能用 container-type:size 求 cqh：size containment 会让卡片高度无视子元素而塌陷成一条线。
+     * 下落距离用固定值，略大于典型卡片高度，由 overflow:hidden 裁剪。
+     */
+    @keyframes makeItRainInCard {
         0% { opacity: 1; transform: translateY(0) rotateZ(0deg) rotateX(0deg); }
-        100% { opacity: 0; transform: translateY(100vh) rotateZ(360deg) rotateX(360deg); }
+        100% {
+            opacity: 0;
+            transform: translateY(32rem) rotateZ(360deg) rotateX(360deg);
+        }
     }
 </style>
 
@@ -209,7 +230,7 @@
         // 绑定新事件
         const closeModal = () => {
             modal.classList.remove('is-open');
-            canvas.innerHTML = ''; // 清理彩带
+            if (canvas) canvas.innerHTML = '';
         };
 
         closeBtn.onclick = closeModal;
@@ -218,11 +239,11 @@
             closeModal();
         };
 
-        // 触发彩带特效
-        fireConfetti(canvas);
-
-        // 打开弹窗
+        // 先打开遮罩再播彩带：否则 visibility:hidden 时动画已在后台跑完，肉眼看不到
         modal.classList.add('is-open');
+        if (canvas) {
+            requestAnimationFrame(() => fireConfetti(canvas));
+        }
     };
 
     // 物理彩带生成器
@@ -230,7 +251,7 @@
         canvas.innerHTML = ''; // 清空之前的
         const colors = ['#A3B8D6', '#d4b896', '#ffffff', '#ffd300', '#ff6b6b'];
         
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 20; i++) {
             const piece = document.createElement('div');
             piece.className = 'confetti-piece';
             // 随机颜色
@@ -238,13 +259,13 @@
             // 随机水平位置
             piece.style.left = Math.random() * 100 + '%';
             // 随机下落延迟（制造层次感）
-            piece.style.animationDelay = Math.random() * 2 + 's';
+            piece.style.animationDelay = Math.random() * 1 + 's';
             // 随机下落速度
             piece.style.animationDuration = Math.random() * 2 + 3 + 's';
             // 随机大小
             piece.style.transform = `scale(${Math.random() * 0.8 + 0.5})`;
             
-            piece.style.animationName = 'makeItRain';
+            piece.style.animationName = 'makeItRainInCard';
             piece.style.animationTimingFunction = 'linear';
             piece.style.animationFillMode = 'forwards';
 
