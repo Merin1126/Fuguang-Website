@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import faviconSrc from '../assets/favicon.svg';
+import defaultAvatarSrc from '../assets/male.png'; 
 const { mainHeading = "" } = Astro.props;
 ---
 
@@ -17,10 +18,57 @@ const { mainHeading = "" } = Astro.props;
             </div>
         )}
     </div>
+    
     <div class="nav-right">
-        <a href="/auth" class="login-btn" title="登录或注册">
+        <a href="/auth" class="login-btn" id="nav-login-btn" title="登录或注册">
             <i class="fa-regular fa-user login-btn-icon"></i>
             <span>登录</span>
         </a>
+
+        <a href="/dashboard" class="user-profile-btn" id="nav-user-btn" style="display: none;" title="个人中心">
+            <div class="user-avatar-mini">
+                <Image src={defaultAvatarSrc} alt="用户头像" width={60} height={60} loading="eager" draggable="false" />
+            </div>
+            <span id="nav-nickname">加载中...</span>
+        </a>
     </div>
 </nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const token = localStorage.getItem('fuguang_token');
+        const loginBtn = document.getElementById('nav-login-btn');
+        const userBtn = document.getElementById('nav-user-btn');
+        const nicknameEl = document.getElementById('nav-nickname');
+
+        if (token) {
+            // 有卡，切换按钮显示状态
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (userBtn) userBtn.style.display = 'inline-flex';
+
+            try {
+                // 去后厨获取用户真实昵称
+                const response = await fetch('http://127.0.0.1:8000/users/me', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    if (nicknameEl) nicknameEl.textContent = user.nickname || user.username;
+                } else {
+                    // Token 无效处理
+                    localStorage.removeItem('fuguang_token');
+                    if (loginBtn) loginBtn.style.display = 'inline-flex';
+                    if (userBtn) userBtn.style.display = 'none';
+                }
+            } catch (error) {
+                console.error("获取用户信息失败:", error);
+                if (nicknameEl) nicknameEl.textContent = "冒险者";
+            }
+        }
+    });
+</script>

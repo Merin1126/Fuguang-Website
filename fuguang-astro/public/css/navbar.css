@@ -286,3 +286,73 @@
     border: 2px solid var(--bg-card);
     /* 与卡片同色的边框，制造"镂空"效果，避免和图标粘连 */
 }
+
+/* =========================================
+   已登录状态：右侧用户资料按钮 & 四色头像环
+========================================= */
+.user-profile-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: transparent;
+    color: var(--text-title);
+    /* 左边内边距缩小以贴合头像框，右边保持正常的 18px */
+    padding: 4px 18px 4px 4px; 
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        color 0.25s ease,
+        border-color 0.25s ease,
+        background-color 0.25s ease,
+        transform 0.2s ease;
+}
+
+.user-profile-btn:hover {
+    border-color: rgba(212, 184, 150, 0.55);
+    background-color: rgba(212, 184, 150, 0.08); /* 扶光香槟色悬停 */
+    transform: translateY(-1px);
+}
+
+/* 核心：四色环形头像外框 */
+.user-avatar-mini {
+    width: 33px;
+    height: 33px;
+    border-radius: 50%;
+    /* 使用圆锥渐变绘制红、蓝、绿、黄四色环 */
+    background: conic-gradient(from 45deg,
+        #ea4335 0deg 90deg,   /* Google红 */
+        #4285f4 90deg 180deg, /* Google蓝 */
+        #34a853 180deg 270deg,/* Google绿 */
+        #fbbc05 270deg 360deg /* Google黄 */
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px; /* 这个值决定了四色环的厚度 */
+    flex-shrink: 0;
+}
+
+.user-avatar-mini img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    /* 设置黑灰色的边框，制造四色环和头像之间的"镂空隔离带" */
+    border: 2px solid #1a1a1a; 
+    background-color: #1a1a1a;
+    pointer-events: none;
+    user-select: none;
+}
+
+#nav-nickname {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 昵称过长时自动显示省略号 */
+}
