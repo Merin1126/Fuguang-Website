@@ -141,13 +141,13 @@ import ActionModal from '../components/ActionModal.astro';
         const signupEmailInput = document.querySelector<HTMLInputElement>('input[name="registerEmail"]');
         const signupEmailConfirmInput = document.querySelector<HTMLInputElement>('input[name="registerEmailConfirm"]');
 
-        type ModalVariant = 'success' | 'error';
+        type ModalVariant = 'success' | 'error' | 'confirm';
         type ShowActionModalFn = (
             title: string,
             desc: string,
             btnText: string,
             onConfirm?: () => void,
-            options?: { variant?: ModalVariant }
+            options?: { variant?: ModalVariant; cancelText?: string; onCancel?: () => void }
         ) => void;
         const showActionModal = (window as unknown as { showActionModal: ShowActionModalFn }).showActionModal;
 
@@ -292,11 +292,17 @@ import ActionModal from '../components/ActionModal.astro';
 
             const emailInput = signinForm.querySelector<HTMLInputElement>('input[name="email"]');
             const passwordInput = signinForm.querySelector<HTMLInputElement>('input[name="password"]');
-            if (!emailInput || !passwordInput) return;
+            const signinSubmitBtn = signinForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+            if (!emailInput || !passwordInput || !signinSubmitBtn) return;
 
             const formData = new URLSearchParams();
             formData.append('username', emailInput.value);
             formData.append('password', passwordInput.value);
+
+            const signinBtnOriginalText = signinSubmitBtn.textContent ?? '登录';
+            signinSubmitBtn.disabled = true;
+            signinSubmitBtn.textContent = '验证中…';
+            signinSubmitBtn.style.opacity = '0.7';
 
             try {
                 const response = await fetch('http://127.0.0.1:8000/login', {
@@ -330,6 +336,10 @@ import ActionModal from '../components/ActionModal.astro';
                 showActionModal('无法连接服务器', '请检查后端服务是否已启动，或稍后再试。', '我再试试', undefined, {
                     variant: 'error',
                 });
+            } finally {
+                signinSubmitBtn.disabled = false;
+                signinSubmitBtn.textContent = signinBtnOriginalText;
+                signinSubmitBtn.style.opacity = '1';
             }
         });
 
@@ -362,6 +372,14 @@ import ActionModal from '../components/ActionModal.astro';
                 nickname: signupNicknameInput.value,
                 password: signupPasswordInput.value,
             };
+
+            const signupSubmitBtn = signupForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+            if (!signupSubmitBtn) return;
+
+            const signupBtnOriginalText = signupSubmitBtn.textContent ?? '创建账号';
+            signupSubmitBtn.disabled = true;
+            signupSubmitBtn.textContent = '提交中…';
+            signupSubmitBtn.style.opacity = '0.7';
 
             try {
                 const response = await fetch('http://127.0.0.1:8000/register', {
@@ -398,6 +416,10 @@ import ActionModal from '../components/ActionModal.astro';
                 showActionModal('无法连接服务器', '请检查后端服务是否已启动，或稍后再试。', '知道了', undefined, {
                     variant: 'error',
                 });
+            } finally {
+                signupSubmitBtn.disabled = false;
+                signupSubmitBtn.textContent = signupBtnOriginalText;
+                signupSubmitBtn.style.opacity = '1';
             }
         });
     </script>

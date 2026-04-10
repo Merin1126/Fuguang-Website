@@ -16,8 +16,13 @@
             <div class="modal-content">
                 <h2 id="modal-title">操作成功</h2>
                 <p id="modal-desc">您的账号已成功创建！现在您可以开始探索扶光日语的完整世界了。</p>
-                
-                <button class="modal-cta-btn" id="modal-cta">立即前往</button>
+
+                <div class="modal-actions" id="modal-actions">
+                    <button type="button" class="modal-cta-btn modal-cta-btn--secondary" id="modal-cancel" hidden>
+                        取消
+                    </button>
+                    <button type="button" class="modal-cta-btn" id="modal-cta">立即前往</button>
+                </div>
             </div>
         </div>
     </div>
@@ -97,9 +102,9 @@
         overflow: hidden;
     }
 
-    /* 成功态：背景层大字拆两段，四角排布，中间留给 emoji（错误态不展示） */
-    #fuguang-action-modal:not(.is-error) .modal-banner::before,
-    #fuguang-action-modal:not(.is-error) .modal-banner::after {
+    /* 成功态：背景层大字（仅 is-success；错误 / 询问态不展示） */
+    #fuguang-action-modal.is-success .modal-banner::before,
+    #fuguang-action-modal.is-success .modal-banner::after {
         position: absolute;
         font-weight: 700;
         letter-spacing: 0.06em;
@@ -111,14 +116,14 @@
         line-height: 1.2;
     }
 
-    #fuguang-action-modal:not(.is-error) .modal-banner::before {
+    #fuguang-action-modal.is-success .modal-banner::before {
         content: "欢迎进入";
         top: 30px;
         left: 30px;
         font-size: clamp(30px, 3.6vw, 40px);
     }
 
-    #fuguang-action-modal:not(.is-error) .modal-banner::after {
+    #fuguang-action-modal.is-success .modal-banner::after {
         content: "扶光冒险者公会";
         right: 20px;
         bottom: 10px;
@@ -207,6 +212,38 @@
     /* 错误态：仅横幅略偏暖色；图标与成功态共用 .banner-icon 的 float 动画 */
     #fuguang-action-modal.is-error .modal-banner {
         background: linear-gradient(135deg, rgba(200, 100, 100, 0.18), rgba(60, 30, 30, 0.22));
+    }
+
+    /* 询问态：❓、无彩带、无背景大字；横幅偏冷中性色 */
+    #fuguang-action-modal.is-confirm .modal-banner {
+        background: linear-gradient(135deg, rgba(130, 150, 190, 0.2), rgba(90, 100, 130, 0.14));
+    }
+
+    .modal-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .modal-actions.modal-actions--dual {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .modal-actions.modal-actions--dual .modal-cta-btn {
+        flex: 1;
+    }
+
+    .modal-cta-btn--secondary {
+        background: transparent !important;
+        color: rgba(255, 255, 255, 0.88) !important;
+        border: 1px solid rgba(255, 255, 255, 0.28) !important;
+    }
+
+    .modal-cta-btn--secondary:hover {
+        opacity: 0.95;
+        border-color: rgba(255, 255, 255, 0.45) !important;
     }
 
     /* 单 canvas + rAF 绘制，避免大量 DOM/CSS 动画与毛玻璃抢 GPU */
@@ -332,7 +369,9 @@
     }
 
     /**
-     * @param {{ variant?: 'success' | 'error' }} [options] — error：无彩带、横幅为 ❌
+     * @param {{ variant?: 'success' | 'error' | 'confirm', cancelText?: string, onCancel?: () => void }} [options]
+     * success：🎉+彩带；error：❌；confirm：❓+双按钮。
+     * confirm 点取消/× 触发 onCancel；error/success 若提供 onCancel，点 × 也会触发（如未登录守卫统一跳转）。
      */
     window.showActionModal = function(title, desc, btnText, onConfirm, options) {
         var modal = document.getElementById('fuguang-action-modal');
@@ -340,42 +379,92 @@
         var descEl = document.getElementById('modal-desc');
         var ctaBtn = document.getElementById('modal-cta');
         var closeBtn = document.getElementById('modal-close');
+        var cancelBtn = document.getElementById('modal-cancel');
+        var actionsEl = document.getElementById('modal-actions');
         var canvas = document.getElementById('confetti-canvas');
         var bannerIcon = document.getElementById('modal-banner-icon');
 
-        var variant = options && options.variant === 'error' ? 'error' : 'success';
+        var variant = 'success';
+        if (options && options.variant === 'error') variant = 'error';
+        else if (options && options.variant === 'confirm') variant = 'confirm';
+
+        modal.classList.remove('is-success', 'is-error', 'is-confirm');
 
         titleEl.textContent = title;
         descEl.textContent = desc;
         ctaBtn.textContent = btnText;
 
         if (bannerIcon) {
-            bannerIcon.textContent = variant === 'error' ? '❌' : '🎉';
+            if (variant === 'error') bannerIcon.textContent = '❌';
+            else if (variant === 'confirm') bannerIcon.textContent = '❓';
+            else bannerIcon.textContent = '🎉';
         }
+
+        stopConfettiAnimation();
+        clearConfettiCanvas(canvas);
 
         if (variant === 'error') {
             modal.classList.add('is-error');
-            stopConfettiAnimation();
-            clearConfettiCanvas(canvas);
+            if (actionsEl) actionsEl.classList.remove('modal-actions--dual');
+            if (cancelBtn) {
+                cancelBtn.hidden = true;
+                cancelBtn.onclick = null;
+            }
+        } else if (variant === 'confirm') {
+            modal.classList.add('is-confirm');
+            if (actionsEl) actionsEl.classList.add('modal-actions--dual');
+            if (cancelBtn) {
+                cancelBtn.hidden = false;
+                cancelBtn.textContent = (options && options.cancelText) || '取消';
+            }
         } else {
-            modal.classList.remove('is-error');
+            modal.classList.add('is-success');
+            if (actionsEl) actionsEl.classList.remove('modal-actions--dual');
+            if (cancelBtn) {
+                cancelBtn.hidden = true;
+                cancelBtn.onclick = null;
+            }
         }
 
         ctaBtn.onclick = null;
         closeBtn.onclick = null;
 
         var closeModal = function() {
-            modal.classList.remove('is-open');
-            modal.classList.remove('is-error');
+            modal.classList.remove('is-open', 'is-error', 'is-success', 'is-confirm');
+            if (actionsEl) actionsEl.classList.remove('modal-actions--dual');
+            if (cancelBtn) {
+                cancelBtn.hidden = true;
+                cancelBtn.onclick = null;
+            }
             stopConfettiAnimation();
             clearConfettiCanvas(canvas);
         };
 
-        closeBtn.onclick = closeModal;
+        var dismissConfirm = function() {
+            if (variant === 'confirm' && options && options.onCancel) options.onCancel();
+            closeModal();
+        };
+
+        closeBtn.onclick = function() {
+            if (variant === 'confirm') {
+                dismissConfirm();
+                return;
+            }
+            /* 错误/成功态下若提供 onCancel（如未登录守卫：点 × 也跳转） */
+            if (options && typeof options.onCancel === 'function') {
+                options.onCancel();
+            }
+            closeModal();
+        };
+
         ctaBtn.onclick = function() {
             if (onConfirm) onConfirm();
             closeModal();
         };
+
+        if (cancelBtn && variant === 'confirm') {
+            cancelBtn.onclick = dismissConfirm;
+        }
 
         modal.classList.add('is-open');
         if (variant === 'success' && canvas && canvas.tagName === 'CANVAS') {
