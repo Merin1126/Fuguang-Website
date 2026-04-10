@@ -2,6 +2,7 @@
 import Navbar from '../components/Navbar.astro';
 import BottomNav from '../components/BottomNav.astro';
 import MainFooter from '../components/MainFooter.astro';
+import ActionModal from '../components/ActionModal.astro';
 ---
 
 <!DOCTYPE html>
@@ -18,7 +19,7 @@ import MainFooter from '../components/MainFooter.astro';
 </head>
 <body>
     <Navbar />
-
+    <ActionModal />
     <main class="home-main auth-main">
         <section class="auth-shell" aria-label="用户认证">
             <div class="auth-card">
@@ -140,6 +141,25 @@ import MainFooter from '../components/MainFooter.astro';
         const signupEmailInput = document.querySelector<HTMLInputElement>('input[name="registerEmail"]');
         const signupEmailConfirmInput = document.querySelector<HTMLInputElement>('input[name="registerEmailConfirm"]');
 
+        type ShowActionModalFn = (title: string, desc: string, btnText: string, onConfirm?: () => void) => void;
+        const showActionModal = (window as unknown as { showActionModal: ShowActionModalFn }).showActionModal;
+
+        function formatApiDetail(detail: unknown): string {
+            if (detail == null || detail === '') return '请稍后重试。';
+            if (typeof detail === 'string') return detail;
+            if (Array.isArray(detail)) {
+                return detail
+                    .map((item) => {
+                        if (item && typeof item === 'object' && 'msg' in item) {
+                            return String((item as { msg: unknown }).msg);
+                        }
+                        return JSON.stringify(item);
+                    })
+                    .join('；');
+            }
+            return String(detail);
+        }
+
         let mode: 'signin' | 'signup' = 'signin';
 
         const nicknamePattern = /^(?=.{5,15}$)[A-Za-z0-9\u3040-\u30FF\u3400-\u9FFF々ー]+$/;
@@ -232,23 +252,29 @@ import MainFooter from '../components/MainFooter.astro';
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    alert(`登录失败: ${errorData.detail}`);
+                    let desc = `服务器返回 ${response.status}`;
+                    try {
+                        const errorData = (await response.json()) as { detail?: unknown };
+                        desc = formatApiDetail(errorData.detail);
+                    } catch {
+                        /* body 非 JSON */
+                    }
+                    showActionModal('登录失败', desc, '知道了');
                     return;
                 }
 
-                // 登录成功，把 Token 塞进本地钱包
-                const data = await response.json();
-                localStorage.setItem('fuguang_token', data.access_token);
-                
-                alert('✅ 登录成功！');
-                
-                // 暂时刷新当前页面，未来这里可以写：window.location.href = '/dashboard';
-                window.location.reload(); 
+                const data = (await response.json()) as { access_token?: string };
+                if (data.access_token) {
+                    localStorage.setItem('fuguang_token', data.access_token);
+                }
+
+                showActionModal('登录成功', '欢迎回来！', '继续', () => {
+                    window.location.reload();
+                });
 
             } catch (error) {
-                console.error("请求后端出错:", error);
-                alert("无法连接到服务器，请检查后端服务是否启动。");
+                console.error('请求后端出错:', error);
+                showActionModal('无法连接服务器', '请检查后端服务是否已启动，或稍后再试。', '知道了');
             }
         });
 
@@ -280,24 +306,32 @@ import MainFooter from '../components/MainFooter.astro';
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    // 处理后端验证错误（比如邮箱已存在）
-                    const errorMsg = errorData.detail || "注册失败，请检查输入格式。";
-                    alert(`注册失败: ${errorMsg}`);
+                    let desc = '注册失败，请检查输入格式。';
+                    try {
+                        const errorData = (await response.json()) as { detail?: unknown };
+                        desc = formatApiDetail(errorData.detail);
+                    } catch {
+                        desc = `服务器返回 ${response.status}`;
+                    }
+                    showActionModal('注册失败', desc, '知道了');
                     return;
                 }
 
-                alert('✅ 注册成功！请登录。');
-                
-                // 丝滑体验：自动切换回登录页面，并帮用户填好刚才注册的邮箱
-                mode = 'signin';
-                syncUi();
-                const signinEmailInput = signinForm.querySelector('input[name="email"]');
-                if (signinEmailInput) signinEmailInput.value = payload.email;
+                showActionModal(
+                    '注册成功！',
+                    '您的扶光账号已创建完毕，欢迎加入我们的世界。',
+                    '去登录',
+                    () => {
+                        mode = 'signin';
+                        syncUi();
+                        const signinEmailInput = signinForm?.querySelector('input[name="email"]');
+                        if (signinEmailInput) (signinEmailInput as HTMLInputElement).value = payload.email;
+                    }
+                );
 
             } catch (error) {
-                console.error("请求后端出错:", error);
-                alert("无法连接到服务器，请检查后端服务是否启动。");
+                console.error('请求后端出错:', error);
+                showActionModal('无法连接服务器', '请检查后端服务是否已启动，或稍后再试。', '知道了');
             }
         });
     </script>
