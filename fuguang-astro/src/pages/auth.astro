@@ -88,7 +88,7 @@ import MainFooter from '../components/MainFooter.astro';
                             />
                             <span>您的昵称</span>
                         </label>
-                        <p class="auth-hint">昵称仅支持中英日字符，长度 5-15 个字符。</p>
+                        <p class="auth-hint">昵称支持中英日字符与数字，长度 5-15 个字符。</p>
 
                         <button class="auth-submit" type="submit">创建账号</button>
                     </form>
@@ -142,7 +142,7 @@ import MainFooter from '../components/MainFooter.astro';
 
         let mode: 'signin' | 'signup' = 'signin';
 
-        const nicknamePattern = /^(?=.{5,15}$)[A-Za-z\u3040-\u30FF\u3400-\u9FFF々ー]+$/;
+        const nicknamePattern = /^(?=.{5,15}$)[A-Za-z0-9\u3040-\u30FF\u3400-\u9FFF々ー]+$/;
         const usernamePattern = /^(?=.{5,15}$)[A-Za-z0-9]+$/;
 
         const syncUi = () => {
@@ -181,7 +181,7 @@ import MainFooter from '../components/MainFooter.astro';
                 return;
             }
             if (!nicknamePattern.test(value)) {
-                signupNicknameInput.setCustomValidity('昵称仅限中英日字符，且长度需为 5-15 个字符。');
+                signupNicknameInput.setCustomValidity('昵称仅限中英日字符与数字，且长度需为 5-15 个字符。');
                 return;
             }
             signupNicknameInput.setCustomValidity('');
@@ -211,6 +211,95 @@ import MainFooter from '../components/MainFooter.astro';
         signupEmailConfirmInput?.addEventListener('input', validateEmailMatch);
 
         syncUi();
+
+        // --- 1. 登录逻辑 (发往大堂对暗号，获取 VIP 卡) ---
+        signinForm?.addEventListener('submit', async (e) => {
+            e.preventDefault(); // 阻止浏览器默认的页面刷新
+
+            const emailInput = signinForm.querySelector('input[name="email"]');
+            const passwordInput = signinForm.querySelector('input[name="password"]');
+            
+            // 组装 OAuth2 标准要求的 Form Data
+            const formData = new URLSearchParams();
+            formData.append('username', emailInput.value); // 注意：FastAPI 要求这里的 key 必须叫 username
+            formData.append('password', passwordInput.value);
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`登录失败: ${errorData.detail}`);
+                    return;
+                }
+
+                // 登录成功，把 Token 塞进本地钱包
+                const data = await response.json();
+                localStorage.setItem('fuguang_token', data.access_token);
+                
+                alert('✅ 登录成功！');
+                
+                // 暂时刷新当前页面，未来这里可以写：window.location.href = '/dashboard';
+                window.location.reload(); 
+
+            } catch (error) {
+                console.error("请求后端出错:", error);
+                alert("无法连接到服务器，请检查后端服务是否启动。");
+            }
+        });
+
+
+        // --- 2. 注册逻辑 (告诉后厨新建格子) ---
+        signupForm?.addEventListener('submit', async (e) => {
+            e.preventDefault(); // 阻止默认刷新
+
+            // 如果刚才你写的那些密码一致性验证没通过，就不发请求
+            if (!signupForm.checkValidity()) {
+                signupForm.reportValidity();
+                return;
+            }
+
+            // 提取输入框的值
+            const payload = {
+                email: signupEmailInput.value,
+                username: signupUsernameInput.value,
+                nickname: signupNicknameInput.value,
+                password: signupPasswordInput.value
+            };
+
+            try {
+                // 注册使用 JSON 格式
+                const response = await fetch('http://127.0.0.1:8000/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    // 处理后端验证错误（比如邮箱已存在）
+                    const errorMsg = errorData.detail || "注册失败，请检查输入格式。";
+                    alert(`注册失败: ${errorMsg}`);
+                    return;
+                }
+
+                alert('✅ 注册成功！请登录。');
+                
+                // 丝滑体验：自动切换回登录页面，并帮用户填好刚才注册的邮箱
+                mode = 'signin';
+                syncUi();
+                const signinEmailInput = signinForm.querySelector('input[name="email"]');
+                if (signinEmailInput) signinEmailInput.value = payload.email;
+
+            } catch (error) {
+                console.error("请求后端出错:", error);
+                alert("无法连接到服务器，请检查后端服务是否启动。");
+            }
+        });
     </script>
 </body>
 </html>
