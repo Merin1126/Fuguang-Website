@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import { mdxComponents } from '../../components/mdx-directive-components.mjs';
 
 export async function getStaticPaths() {
     const entries = await getCollection('grammar');
@@ -24,5 +25,5 @@ if (level) {
 ---
 
 <ArticleLayout {...entry.data} breadcrumbSegments={grammarBreadcrumb}>
-    <Content />
+    <Content components={mdxComponents} />
 </ArticleLayout>

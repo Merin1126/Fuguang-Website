@@ -12,8 +12,17 @@ const allPosts = await getCollection('grammar');
 const levelParam = String(Astro.params.level ?? '').toLowerCase();
 const currentLevel = levelParam.toUpperCase();
 
+/** 与 frontmatter 的 level 一致：n2/foo → N2，避免漏写 level 时列表为空 */
+function grammarLevelFromId(id: string): string | undefined {
+    const m = id.match(/^n([1-5])\//i);
+    return m ? `N${m[1]}` : undefined;
+}
+
 const posts = allPosts
-    .filter((post) => post.data.level === currentLevel)
+    .filter((post) => {
+        const resolved = post.data.level ?? grammarLevelFromId(post.id);
+        return resolved === currentLevel;
+    })
     .map((post) => ({
         ...post,
         slug: post.id.replace(/\.mdx?$/, ''),
