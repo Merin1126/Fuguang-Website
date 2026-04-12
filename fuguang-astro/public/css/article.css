@@ -69,6 +69,8 @@
     /* 字间距微调 */
     text-align: justify;
     /* 两端对齐，消除右侧参差不齐的锯齿边 */
+    text-justify: inter-ideograph;
+    /* 👇 新增：告诉浏览器这是表意文字（中日韩），它会更聪明地微调字间距，而不是只拉伸空格 */
 }
 
 /* Markdown 正文基础排版（从 global.css 归并到文章专用样式） */
@@ -94,16 +96,44 @@
     font-weight: 700;
 }
 
-.article-content ul,
+/* 1. 外层容器：重置缩进，保持边缘整齐 */
 .article-content ol {
-    margin-bottom: 24px;
-    padding-left: 20px;
-    color: var(--text-body);
-    line-height: 1.8;
+    margin-top: 24px;
+    margin-bottom: 32px;
+    padding-left: 1.4em; /* 悬挂缩进：让数字在左外侧，多行文字换行后左侧完美对齐 */
 }
 
-.article-content li {
-    margin-bottom: 8px;
+/* 2. 例句本体：继承正文黄金法则，并做微调隔离 */
+.article-content ol > li {
+    /* 继承正文的黄金排版 */
+    font-size: 16px;
+    line-height: 2.1;
+    letter-spacing: 0.7px;
+    text-align: justify;
+    text-justify: inter-ideograph;
+    color: var(--text-title); 
+    
+    /* 👇 区分正文的微调：拉大例句之间的上下间距，提供呼吸感 */
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    
+    /* 👇 视觉隔离：底部加上极其微弱的虚线，借鉴了参考网站，但更符合暗黑玻璃拟态 */
+    border-bottom: 1.5px dashed rgba(255, 255, 255, 0.08); 
+}
+
+/* 最后一项例句不需要底部分割线 */
+.article-content ol > li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* 3. 细节狂魔魔法：美化自带的数字序号 */
+.article-content ol li::marker {
+    color: var(--color-primary); /* 数字变成你的品牌雾霾蓝 */
+    font-weight: 600; /* 稍微加粗突出 */
+    /* 数字使用等宽字体（Monospace），看起来更像严谨的教材 */
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; 
 }
 
 /* 引用块 (Blockquote) 样式 */
@@ -143,20 +173,26 @@
     margin-bottom: 0;
 }
 
-/* 🇯🇵 日语注音专属样式 (Ruby) */
-ruby {
-    font-family: 'M PLUS 1', sans-serif;
-    ruby-align: center;
-    /* 假名居中对齐汉字 */
+/* 🇯🇵 日语注音专属样式 (Ruby)
+   正文 p 的 letter-spacing / justify 会继承进 ruby，易导致 rt 相对汉字偏左；
+   在此重置字距并显式居中。若仍略偏，可改 --article-ruby-rt-shift-x（如 0.06em 向右）。 */
+.article-content {
+    --article-ruby-rt-shift-x: 0em;
 }
 
-rt {
+.article-content ruby {
+    font-family: 'M PLUS 1', sans-serif;
+    letter-spacing: normal;
+    ruby-align: center;
+}
+
+.article-content rt {
     font-size: 10px;
-    /* 假名必须要小 */
     color: var(--color-primary);
-    /* 假名用雾霾蓝，和正文区分开 */
-    transform: translateY(-2px);
-    /* 把假名稍微往下压一点点，贴近汉字 */
+    letter-spacing: normal;
+    ruby-align: center;
+    text-align: center;
+    transform: translate(var(--article-ruby-rt-shift-x), 3px);
 }
 
 /* 简单的淡入动画 */

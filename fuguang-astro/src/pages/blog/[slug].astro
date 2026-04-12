@@ -1,20 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
-
-// 导入所有被 remark-directive 映射的高级组件
-import CalloutAccent from '../../components/The Top Accent.astro';
-import CalloutGlow from '../../components/The Glowing Edge.astro';
-import CalloutBadge from '../../components/The Badge Floating.astro';
-import CalloutWire from '../../components/Minimal Wireframe.astro';
-import CalloutGlass from '../../components/Frosted Glass.astro';
-import CalloutNeon from '../../components/Neon Warning Grid.astro';
-import KeywordChip from '../../components/KeywordChip.astro';
-import ReferenceCitation from '../../components/ReferenceCitation.astro';
-import ProfileCard from '../../components/ProfileCard.astro';
-import Signature from '../../components/Signature.astro'; // 👈 新增
-import DashedDivider from '../../components/DashedDivider.astro';
-import SideImage from '../../components/SideImage.astro';
+import { mdxComponents as mdxBase } from '../../components/mdx-directive-components.mjs';
+import { mdxArticleExtras } from '../../components/mdx-article-extras.mjs';
 
 export async function getStaticPaths() {
     const blogEntries = await getCollection('blog');
@@ -27,23 +15,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 
-// 将 AST 生成的虚拟标签映射到实际的 Astro 组件
-const mdxComponents = {
-    'directive-accent': CalloutAccent,
-    'directive-glow': CalloutGlow,
-    'directive-badge': CalloutBadge,
-    'directive-wire': CalloutWire,
-    'directive-glass': CalloutGlass,
-    'directive-neon': CalloutNeon,
-    'directive-kw': KeywordChip,
-    'directive-ref': ReferenceCitation, // 注入参考文献指令
-    'directive-profile': ProfileCard,
-    'directive-sideimg': SideImage,
-    'directive-dash': DashedDivider,
-    // remark 将 :::sig / ::sig 映射为 directive-sig（不是 directive-signature）
-    'directive-sig': Signature,
-    'directive-signature': Signature,
-};
+const mdxComponents = { ...mdxBase, ...mdxArticleExtras };
 ---
 
 <ArticleLayout

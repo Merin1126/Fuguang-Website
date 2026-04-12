@@ -1,0 +1,5 @@
+---
+// src/components/Ruby.astro
+const { t } = Astro.props;
+---
+<ruby><slot /><rp>（</rp><rt>{t}</rt><rp>）</rp></ruby>

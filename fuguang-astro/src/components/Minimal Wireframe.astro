@@ -16,7 +16,8 @@ const { title = 'Minimal Wireframe' } = Astro.props as Props;
 <style>
   .mw-callout {
     margin: 22px 0;
-    padding: 14px 16px;
+    /* 微调内边距，左右稍微拉宽一点，增加高级感 */
+    padding: 16px 20px; 
     border-radius: 10px;
     border: 1px dashed rgba(166, 177, 205, 0.4);
     background: rgba(19, 24, 34, 0.45);
@@ -29,11 +30,31 @@ const { title = 'Minimal Wireframe' } = Astro.props as Props;
     font-size: 0.8rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    font-weight: 600; /* 稍微加粗标题，拉开层级 */
   }
 
   .mw-content {
     color: #d0d8ea;
-    line-height: 1.8;
+  }
+
+  /* 🛡️ 核心架构魔法：隔离全局污染，重塑卡片内排版 */
+  .mw-content :global(p) {
+    font-size: 15px; /* 比正文稍微小一点，更精致 */
+    line-height: 1.65; /* 核心！将 2.1 压缩回 1.65，恢复紧凑感 */
+    margin-bottom: 8px; /* 砍掉原本 18px 的巨大间距 */
+    text-align: justify;
+    text-justify: inter-ideograph;
+  }
+
+  /* 消除最后一个段落的底部留白，防止卡片底部被撑大 */
+  .mw-content :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* 如果卡片内有加粗，稍微降低一点饱和度，契合暗黑主题 */
+  .mw-content :global(strong) {
+    color: #e2e8f5;
+    font-weight: 600;
   }
 
   .mw-callout:hover {
