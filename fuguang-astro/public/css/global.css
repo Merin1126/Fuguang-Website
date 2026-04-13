@@ -1,6 +1,10 @@
 /* 引入谷歌日系字体：M PLUS 1，支持 400(正常)和 700(加粗)两种字重 */
 @import url('https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;700&display=swap');
 
+html {
+    scroll-behavior: smooth; /* 开启全局平滑滚动，让所有的锚点跳转（包括目录点击）如丝般顺滑 */
+}
+
 /* =========================================
    全局 CSS 变量 (Color & Shadow Variables)
 ========================================= */

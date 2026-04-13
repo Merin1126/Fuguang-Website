@@ -54,7 +54,19 @@ const { title = 'Neon Warning Grid' } = Astro.props as Props;
   .nwg-content {
     position: relative;
     color: #ffdfa9;
-    line-height: 1.8;
+  }
+
+  /* 🛡️ 隔离全局污染，重塑卡片内排版 */
+  .nwg-content :global(p) {
+    font-size: 15px;
+    line-height: 1.65;
+    margin-bottom: 8px;
+    text-align: justify;
+    text-justify: inter-ideograph;
+  }
+
+  .nwg-content :global(p:last-child) {
+    margin-bottom: 0;
   }
 
   .nwg-callout:hover {

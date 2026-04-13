@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import { mdxComponents } from '../../components/mdx-directive-components.mjs';
+import ArticleToc from '../../components/ArticleToc.astro'; // 👈 1. 导入目录组件
 
 export async function getStaticPaths() {
     const entries = await getCollection('grammar');
@@ -12,7 +13,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 
 const level = entry.data.level;
 const grammarBreadcrumb: { label: string; href?: string }[] = [{ label: '语法文库', href: '/grammar' }];
@@ -25,5 +26,7 @@ if (level) {
 ---
 
 <ArticleLayout {...entry.data} breadcrumbSegments={grammarBreadcrumb}>
+    <ArticleToc headings={headings} />
+    
     <Content components={mdxComponents} />
 </ArticleLayout>

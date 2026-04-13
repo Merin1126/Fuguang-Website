@@ -61,7 +61,7 @@
 
 /* 正文排版 (极其重要：控制行高与段落间距) */
 .article-content p {
-    font-size: 16px;
+    font-size: 17px;
     line-height: 2.1;
     /* 黄金阅读行高 */
     margin-bottom: 18px;
@@ -81,11 +81,38 @@
 }
 
 .article-content h2 {
-    font-size: 20px;
+    font-size: 21px; 
     color: var(--text-title);
-    margin-top: 30px;
-    margin-bottom: 5px;
     font-weight: 700;
+    
+    /* 保持盒子向左右两边突破 20px */
+    margin-left: -20px;
+    margin-right: -20px;
+    
+    /* 👇 核心修改：减小左内边距 */
+    /* 设为 0px 会直接对齐实线的起点；
+       设为 5px ~ 8px 会保留一点点呼吸感，看起来最精致。 */
+    padding-left: 8px; 
+    padding-right: 20px;
+
+    /* 纵向间距保持不变 */
+    margin-top: 40px;      
+    padding-bottom: 12px;  
+    margin-bottom: 20px;   
+    
+    /* 实线底座 */
+    border-bottom: 1px solid var(--hr-color); 
+    /* 👇 新增：锚点偏移保护！当点击目录跳转到 h2 时，让 h2 距离浏览器顶部保留 120px 的安全距离（避开你的导航栏） */
+    scroll-margin-top: 120px; 
+}
+
+/* 📱 移动端适配：确保手机上不会因为偏移过多导致文字贴边 */
+@media (max-width: 600px) {
+    .article-content h2 {
+        margin-left: -16px;
+        margin-right: -16px;
+        padding-left: 12px; /* 手机端保留稍微多一点的边距，防止视觉局促 */
+    }
 }
 
 .article-content h3 {
@@ -106,7 +133,7 @@
 /* 2. 例句本体：继承正文黄金法则，并做微调隔离 */
 .article-content ol > li {
     /* 继承正文的黄金排版 */
-    font-size: 16px;
+    font-size: 15px;
     line-height: 2.1;
     letter-spacing: 0.7px;
     text-align: justify;
@@ -117,8 +144,8 @@
     margin-bottom: 28px;
     padding-bottom: 16px;
     
-    /* 👇 视觉隔离：底部加上极其微弱的虚线，借鉴了参考网站，但更符合暗黑玻璃拟态 */
-    border-bottom: 1.5px dashed rgba(255, 255, 255, 0.08); 
+    /* 👇 视觉隔离：与 DashedDivider 同色系天蓝虚线，略低透明度以保留列表项间呼吸感 */
+    border-bottom: 1.5px dashed rgba(130, 188, 255, 0.14);
 }
 
 /* 最后一项例句不需要底部分割线 */

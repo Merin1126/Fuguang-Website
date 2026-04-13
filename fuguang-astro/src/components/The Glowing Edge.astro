@@ -47,8 +47,20 @@ const { title = 'The Glowing Edge' } = Astro.props as Props;
 
   .tge-content {
     color: #efe6ff;
-    line-height: 1.8;
     text-shadow: 0 0 8px rgba(208, 166, 255, 0.2);
+  }
+
+  /* 🛡️ 隔离全局污染，重塑卡片内排版 */
+  .tge-content :global(p) {
+    font-size: 15px;
+    line-height: 1.65;
+    margin-bottom: 8px;
+    text-align: justify;
+    text-justify: inter-ideograph;
+  }
+
+  .tge-content :global(p:last-child) {
+    margin-bottom: 0;
   }
 
   .tge-callout:hover {
