@@ -169,6 +169,23 @@ import MainFooter from '../components/MainFooter.astro';
             const articleContent = article.querySelector<HTMLElement>('.article-content');
             if (!articleContent) return;
             const headers = Array.from(articleContent.querySelectorAll<HTMLElement>('h2, h3'));
+            // --- 👇 新增：提取 H2，生成迷你卡片并追加到侧边栏最底部 ---
+            const h2Headers = Array.from(articleContent.querySelectorAll('h2'));
+            let miniCardHTML = '';
+            if (h2Headers.length > 0) {
+                miniCardHTML = `
+                    <div class="toc-mini-card" id="toc-mini-card">
+                        <ul class="toc-mini-list">
+                            ${h2Headers.map(h2 => `<li><a href="#${h2.id}" data-id="${h2.id}">${h2.innerText.trim()}</a></li>`).join('')}
+                        </ul>
+                        <a href="#top" class="toc-back-to-top"><i class="fa-solid fa-arrow-up"></i> 返回顶部</a>
+                    </div>
+                `;
+                // 直接追加到 toc 容器内部（它会被绝对定位拉到红圈处）
+                toc.insertAdjacentHTML('beforeend', miniCardHTML);
+            }
+            const miniCardEl = document.getElementById('toc-mini-card');
+            // --- 👆 新增结束 ---
             const STORAGE_KEY = `fuguang_last_read_${window.location.pathname}`;
             const trackEl = track;
             const thumbEl = thumb;
@@ -265,6 +282,39 @@ import MainFooter from '../components/MainFooter.astro';
                     }
                 }
                 titleTextEl.innerText = currentSection;
+                // --- 👇 新增：控制迷你卡片的显示与高亮 ---
+                if (miniCardEl && h2Headers.length > 0) {
+                    const firstH2 = h2Headers[0];
+                    // 判断是否滑动过了第一个 H2 (阈值设定为 180px，刚过视口顶部)
+                    const pastFirstH2 = firstH2.getBoundingClientRect().top < 180;
+                    
+                    if (pastFirstH2) {
+                        miniCardEl.classList.add('is-visible');
+                    } else {
+                        miniCardEl.classList.remove('is-visible');
+                    }
+
+                    // 找出当前处于激活状态的 H2
+                    let activeId = '';
+                    for (let i = h2Headers.length - 1; i >= 0; i--) {
+                        // 稍微调大阈值，使高亮切换更及时
+                        if (h2Headers[i].getBoundingClientRect().top < detectionThreshold + 80) {
+                            activeId = h2Headers[i].id;
+                            break;
+                        }
+                    }
+
+                    // 遍历卡片里的链接，进行点亮/熄灭
+                    const links = miniCardEl.querySelectorAll('a[data-id]');
+                    links.forEach(link => {
+                        if (link.getAttribute('data-id') === activeId) {
+                            link.classList.add('is-active');
+                        } else {
+                            link.classList.remove('is-active');
+                        }
+                    });
+                }
+                // --- 👆 新增结束 ---
 
                 const directionDelta = scrollTop - lastScrollTop;
                 if (directionDelta > 2) {

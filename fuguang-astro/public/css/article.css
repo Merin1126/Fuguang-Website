@@ -950,3 +950,137 @@
     line-height: 1.6;
     margin-bottom: 0;
 }
+
+/* =========================================
+   缩小版伴随目录卡片 (Mini TOC Card) - 悬浮于红圈区域
+========================================= */
+.toc-mini-card {
+    position: absolute;
+    left: -5px;         /* 与上方的单行标题文本对齐 */
+    top: 320px;         /* ★ 核心魔法：轨道高 300px，320px 刚好落在正下方的红圈区域 */
+    width: 250px;       /* 缩小版宽度 */
+    overflow: hidden; 
+    
+    /* 完美复刻 ArticleToc 的光影材质 */
+    background: 
+      radial-gradient(circle at 100% 0%, rgba(163, 184, 214, 0.08) 0%, transparent 60%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%),
+      rgba(24, 26, 31, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-top-color: rgba(255, 255, 255, 0.12);
+    border-left-color: rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 16px 14px; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    
+    /* 交互与动画：默认隐藏并在下方待命 */
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px) scale(0.98);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 当页面滑动过首个 H2 时激活 */
+.toc-mini-card.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+/* 缩小的巨型水印 */
+.toc-mini-card::after {
+    content: "INDEX"; 
+    position: absolute;
+    right: -6px;    
+    bottom: -12px;   
+    font-size: 55px;  /* 字号缩小 */
+    font-weight: 900; 
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: rgba(255, 255, 255, 0.025); 
+    letter-spacing: -0.05em; 
+    pointer-events: none; 
+    user-select: none; 
+    z-index: 0; 
+}
+
+/* 缩小的列表与树状线 */
+.toc-mini-list {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    padding-left: 4px; 
+    list-style: none;  
+}
+
+.toc-mini-list li {
+    position: relative;
+    margin-bottom: 4px;
+    padding-left: 10px; 
+}
+
+.toc-mini-list li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 9px; 
+    height: 14px;
+    border-left: 1.5px solid rgba(163, 184, 214, 0.5); 
+}
+
+.toc-mini-list li::after {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 15px; 
+    width: 6px;
+    border-top: 1.5px solid rgba(163, 184, 214, 0.5);
+}
+
+.toc-mini-list a {
+    display: block; 
+    padding: 6px 4px;
+    border-radius: 6px;
+    color: #a5b0c5; /* 默认未读状态偏灰 */
+    letter-spacing: 0.5px; 
+    text-decoration: none;
+    font-size: 12px; /* 字号缩小 */
+    border: 1px solid transparent; 
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.toc-mini-list a:hover {
+    background: rgba(255, 255, 255, 0.05); 
+    border-color: rgba(163, 184, 214, 0.3); 
+    color: var(--color-accent); 
+}
+
+/* 联动高亮状态 */
+.toc-mini-list a.is-active {
+    color: var(--color-primary);
+    font-weight: bold;
+}
+
+/* 返回目录按钮 */
+.toc-back-to-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding-left: 8px;
+    font-size: 11px;
+    color: var(--color-accent);
+    text-decoration: none;
+    position: relative;
+    z-index: 1;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.toc-back-to-top:hover {
+    opacity: 1;
+}
